@@ -52,7 +52,7 @@ function highlight(angle::EuclidAngle2f;
                                     $center) :
                                 $center)))
 
-    dot_width = @lift(isapprox($(angle_data.θ), π/2, atol=0.0001) || larger ? 0.6f0 : 0f0)
+    dot_width = @lift($(angle_data.θ) > π/2 || larger ? 0.6f0 : 0f0)
 
     observable_highlight = Observable(0f0)
     observable_dot_highlight = Observable{Float32}(0f0)
