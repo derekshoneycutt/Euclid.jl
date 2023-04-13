@@ -43,9 +43,8 @@ function get_angle_measure_observables(
                 @lift(min($norm_1, $norm_2) * $angle_rad) :
                 @lift(min($norm_1, $norm_2) * angle_rad)
 
-    rangle = round(π/2f0, digits=4)
-    θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
-    angle_range = @lift($θ == rangle && !larger ?
+    θ = @lift(fix_angle(angle_between($pointA - $center, $pointB - $center)))
+    angle_range = @lift(isapprox($θ, π/2, atol=0.0001) && !larger ?
                         [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
                          Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
                          Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :

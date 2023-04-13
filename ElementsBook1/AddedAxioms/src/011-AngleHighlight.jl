@@ -37,23 +37,22 @@ function highlight(angle::EuclidAngle2f;
 
     angle_data = get_angle_measure_observables(center, extremA, extremB, larger, 0.25f0)
 
-    strangle = round(1f0π, digits=4)
-    dot_begin = @lift($(angle_data.θ) == strangle ?
+    dot_begin = @lift(isapprox($(angle_data.θ), π, atol=0.0001) ?
                         ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
                             first($(angle_data.angle_range))) :
                         $center)
-    dot_end = @lift($(angle_data.θ) == strangle ?
+    dot_end = @lift(isapprox($(angle_data.θ), π, atol=0.0001) ?
                         ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
                             last($(angle_data.angle_range))) :
                         (larger ?
                             ([cos(π + $(angle_data.θ_start)); sin(π + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                 $center) :
-                            ($(angle_data.θ) > rangle ?
+                            (isapprox($(angle_data.θ), π/2, atol=0.0001) ?
                                 ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                     $center) :
                                 $center)))
 
-    dot_width = @lift($(angle_data.θ) > rangle || larger ? 0.6f0 : 0f0)
+    dot_width = @lift(isapprox($(angle_data.θ), π/2, atol=0.0001) || larger ? 0.6f0 : 0f0)
 
     observable_highlight = Observable(0f0)
     observable_dot_highlight = Observable{Float32}(0f0)
