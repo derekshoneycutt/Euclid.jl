@@ -74,8 +74,8 @@ function get_angle_measure_observables(
     θ_start_end = @lift(get_start_end_θ($vec_θs, larger))
 
     θ_draw_at = angle_rad isa Observable{Float32} ?
-                    @lift(get_drawing_angle($center, $pointA, $pointB, angle_rad)) :
-                    @lift(get_drawing_angle($center, $pointA, $pointB, $angle_rad))
+                    @lift(get_drawing_angle($center, $pointA, $pointB, $angle_rad)) :
+                    @lift(get_drawing_angle($center, $pointA, $pointB, angle_rad))
 
     angle_range = @lift(get_angle_range(($θ_draw_at)[1], larger, ($θ_start_end)[1], ($θ_start_end)[2], ($θ_draw_at)[2], $center))
 
