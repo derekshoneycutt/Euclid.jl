@@ -1,5 +1,5 @@
 
-export EuclidPoint, point, show_complete, hide, animate
+export EuclidPoint, EuclidPoint2f, EuclidPoint3f, point, show_complete, hide, animate
 
 """
     EuclidPoint{N<:Int64}
@@ -13,6 +13,9 @@ mutable struct EuclidPoint{N}
     show_point_width::Observable{Float32}
     label::EuclidText{N}
 end
+
+EuclidPoint2f = EuclidPoint{2}
+EuclidPoint3f = EuclidPoint{3}
 
 """
     point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
