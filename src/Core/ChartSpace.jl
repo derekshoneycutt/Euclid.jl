@@ -1,22 +1,12 @@
 
-export EuclidChartSpace2d, EuclidChartSpace3d, euclid_chart, euclid_chart3, euclid_legend
+export EuclidChartSpace, euclid_chart, euclid_chart3, euclid_legend
 
 """
-    EuclidChartSpace2d
+    EuclidChartSpace
 
 Describes a chart space for euclid diagrams
 """
-mutable struct EuclidChartSpace2d
-    f
-    ax
-end
-
-"""
-    EuclidChartSpace3d
-
-Describes a 3D chart space for euclid diagrams
-"""
-mutable struct EuclidChartSpace3d
+mutable struct EuclidChartSpace
     f
     ax
 end
@@ -42,7 +32,7 @@ function euclid_chart(; title::String="", xlims=(0,0), ylims=(0,0))
         ylims!(ax, ylims[1], ylims[2])
     end
 
-    EuclidChartSpace2d(f, ax)
+    EuclidChartSpace(f, ax)
 end
 
 """
@@ -69,7 +59,7 @@ function euclid_chart3(; title::String="", xlims=(0,0), ylims=(0,0), zlims=(0,0)
         zlims!(ax, zlims[1], zlims[2])
     end
 
-    EuclidChartSpace3d(f, ax)
+    EuclidChartSpace(f, ax)
 end
 
 """
@@ -78,25 +68,11 @@ end
 Draw a legend on a Euclid diagram
 
 # Arguments
-- `chart::EuclidChartSpace2d`: The chart to draw the legend on
+- `chart::EuclidChartSpace`: The chart to draw the legend on
 - `icons`: The vector of icons to draw for each string in the legend
 - `texts`: The vector of texts to draw on the legend
 """
-function euclid_legend(chart::EuclidChartSpace2d, icons, texts)
-    axislegend(chart.ax, icons, texts)
-end
-
-"""
-    euclid_legend(chart, icons, text)
-
-Draw a legend on a Euclid diagram
-
-# Arguments
-- `chart::EuclidChartSpace3d`: The chart to draw the legend on
-- `icons`: The vector of icons to draw for each string in the legend
-- `texts`: The vector of texts to draw on the legend
-"""
-function euclid_legend(chart::EuclidChartSpace3d, icons, texts)
+function euclid_legend(chart::EuclidChartSpace, icons, texts)
     axislegend(chart.ax, icons, texts)
 end
 

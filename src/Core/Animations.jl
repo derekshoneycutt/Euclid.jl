@@ -85,12 +85,12 @@ Draws an animation into a gif file and returns an HTML encoding of it
 
 # Arguments
 - `doer::Function`: Animation function to perform each round
-- `chart::EuclidChartSpace2d`: The chart space to draw animations in
+- `chart::EuclidChartSpace`: The chart space to draw animations in
 - `filename::String`: The name of the gif file to write
 - `timestamps`: The range of timestamps to draw on
 - `framerate`: The framerate to draw animations at
 """
-function draw_animation(doer::Function, chart::EuclidChartSpace2d, filename::String, timestamps; framerate=24)
+function draw_animation(doer::Function, chart::EuclidChartSpace, filename::String, timestamps; framerate=24)
     display_gif(record(doer, chart.f, filename, timestamps; framerate=framerate))
 end
 
@@ -103,11 +103,11 @@ This call doer with a time between 0 and 2π. 2π will be the complete duration,
 
 # Arguments
 - `doer::Function`: Animation function to perform each round
-- `chart::EuclidChartSpace2d`: The chart space to draw animations in
+- `chart::EuclidChartSpace`: The chart space to draw animations in
 - `filename::String`: The name of the gif file to write
 - `duration`: The duration the animation should run for
 - `framerate`: The framerate to draw animations at
 """
-function draw_animation(doer::Function, chart::EuclidChartSpace2d, filename::String; duration=24, framerate=24)
+function draw_animation(doer::Function, chart::EuclidChartSpace, filename::String; duration=24, framerate=24)
     display_gif(record(doer, chart.f, filename, range(0,2π, step=2π/(duration*framerate)); framerate=framerate))
 end
