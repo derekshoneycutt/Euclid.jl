@@ -35,36 +35,22 @@ function highlight(angle::EuclidAngle2f;
     extremB = angle.extremityB
     obs_width = width isa Observable{Float32} ? width : Observable(width)
 
-    vec_θs = @lift(sort([fix_angle(vector_angle($center, $extremA)),
-                         fix_angle(vector_angle($center, $extremB))]))
-
-    θ_use = @lift((($vec_θs)[2] - ($vec_θs)[1] <= π) ⊻ larger ? 1 : 2)
-
-    θ_start = @lift(($vec_θs)[$θ_use])
-    θ_end = @lift($θ_use == 2 ? ($vec_θs)[1] + 2π : ($vec_θs)[2])
-
-    norm_1 = @lift(norm($extremA - $center))
-    norm_2 = @lift(norm($extremB - $center))
-    draw_at = @lift(min($norm_1, $norm_2) * 0.25)
-
-    rangle = round(π/2f0, digits=4)
-    θ = @lift(round(fix_angle(angle_between($extremA - $center, $extremB - $center)), digits=4))
-    angle_range = @lift($θ == rangle && !larger ?
-                         [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
-                          Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
-                          Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :
-                         [Point2f([cos(t); sin(t)]*$draw_at + $center) for t in $θ_start:(π/180):$θ_end])
+    angle_data = get_angle_measure_observables(center, pointA, pointB, larger, 0.25)
 
     strangle = round(1f0π, digits=4)
-    dot_begin = @lift($θ == strangle ?
-                        ([cos(π/2f0 + $θ_start); sin(π/2f0 + $θ_start)]*($draw_at/1.5f0) + first($angle_range)) :
+    dot_begin = @lift($(angle_data.θ) == strangle ?
+                        ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
+                            first($(angle_data.angle_range))) :
                         $center)
-    dot_end = @lift($θ == strangle ?
-                        ([cos(π/2f0 + $θ_start); sin(π/2f0 + $θ_start)]*($draw_at/1.5f0) + last($angle_range)) :
+    dot_end = @lift($(angle_data.θ) == strangle ?
+                        ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
+                            last($(angle_data.angle_range))) :
                         (larger ?
-                            ([cos(π + $θ_start); sin(π + $θ_start)]*($draw_at*1.25f0) + $center) :
+                            ([cos(π + $(angle_data.θ_start)); sin(π + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
+                                $center) :
                             ($θ > rangle ?
-                                ([cos(π/2f0 + $θ_start); sin(π/2f0 + $θ_start)]*($draw_at*1.25f0) + $center) :
+                                ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
+                                    $center) :
                                 $center)))
 
     dot_width = @lift($θ > rangle || larger ? 0.6f0 : 0f0)

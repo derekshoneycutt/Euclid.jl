@@ -62,29 +62,11 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, p
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
     observable_anglerad = Observable(0f0)
 
-    vec_θs = @lift(sort([fix_angle(vector_angle($center, $pointA)),
-                         fix_angle(vector_angle($center, $pointB))]))
-
-    θ_use = @lift((($vec_θs)[2] - ($vec_θs)[1] <= π) ⊻ larger ? 1 : 2)
-
-    θ_start = @lift(($vec_θs)[$θ_use])
-    θ_end = @lift($θ_use == 2 ? ($vec_θs)[1] + 2π : ($vec_θs)[2])
-
-    norm_1 = @lift(norm($pointA - $center))
-    norm_2 = @lift(norm($pointB - $center))
-    draw_at = @lift(min($norm_1, $norm_2) * $observable_anglerad)
-
-    rangle = round(π/2f0, digits=4)
-    θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
-    angle_range = @lift($θ == rangle && !larger ?
-                         [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
-                          Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
-                          Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :
-                         [Point2f0([cos(t); sin(t)]*$draw_at + $center) for t in $θ_start:(π/180):$θ_end])
+    angle_data = get_angle_measure_observables(center, pointA, pointB, larger, observable_anglerad)
 
     pl = [lines!(@lift([Point2f0($pointA), Point2f0($center), Point2f0($pointB)]),
                  color=color, linewidth=(observable_width)),
-          poly!(@lift([Point2f0(p) for p in vcat($angle_range, [$center])]),
+          poly!(@lift([Point2f0(p) for p in vcat($(angle_data.angle_range), [$center])]),
                 color=color, strokewidth=0f0)]
 
     EuclidAngle2f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width)
