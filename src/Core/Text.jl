@@ -6,7 +6,7 @@ export EuclidText, text, show_complete, hide, animate
 
 Describes text to be drawn in Euclid diagrams
 """
-struct EuclidText{N<:Int64}
+struct EuclidText{N}
     location::Observable{Point{N, Float32}}
     plots
     current_opacity::Observable{Float32}

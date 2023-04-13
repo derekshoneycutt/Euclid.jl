@@ -40,8 +40,8 @@ Set up a movement of text on the Euclid diagram
 - `new_spot::Point2f`: The new spot to move the text in the diagram to
 - `begin_at::Union{Point2f, Observable{Point2f}}`: The point to start the movements at (defaults to current location at time of definition)
 """
-function move(text::EuclidText2f, new_spot::Point2f;
-                begin_at::Union{Point2f, Observable{Point2f}}=point.data)
+function move(text::EuclidText{2}, new_spot::Point2f;
+              begin_at::Union{Point2f, Observable{Point2f}}=point.data)
     move(text, Observable(new_spot), begin_at=begin_at)
 end
 
