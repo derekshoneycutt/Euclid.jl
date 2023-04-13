@@ -64,9 +64,8 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, p
 
     vec_θs = @lift(sort([fix_angle(vector_angle($center, $pointA)),
                          fix_angle(vector_angle($center, $pointB))]))
-    θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
 
-    θ_use = @lift((round(($vec_θs)[1] + $θ, digits=0) == round(($vec_θs)[2], digits=0)) ⊻ larger ? 1 : 2)
+    θ_use = @lift((($vec_θs)[2] - ($vec_θs)[1] <= π) ⊻ larger ? 1 : 2)
 
     θ_start = @lift(($vec_θs)[$θ_use])
     θ_end = @lift($θ_use == 2 ? ($vec_θs)[1] + 2π : ($vec_θs)[2])
@@ -76,6 +75,7 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, p
     draw_at = @lift(min($norm_1, $norm_2) * $observable_anglerad)
 
     rangle = round(π/2f0, digits=4)
+    θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
     angle_range = @lift($θ == rangle ?
                          [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
                           Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
