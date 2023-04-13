@@ -31,7 +31,7 @@ Sets up a new point in a Euclid Diagram for drawing
 - `label`: The text label to draw on the point
 - `show_label::Bool`: Whether to show the label of the point
 """
-function point(at_spot::Observable{Point2f};
+function point{N}(at_spot::Observable{Point{N, Float32}};
     point_width::Union{Float32,Observable{Float32}}=0.01f0, point_color=:blue,
     text_color=:blue, text_opacity=1f0, label="A")
 
@@ -40,9 +40,9 @@ function point(at_spot::Observable{Point2f};
     observable_show_width = point_width isa Observable{Float32} ? point_width : Observable(point_width)
 
     plots = poly!(@lift(Circle($observable_data, $observable_width)), color=point_color)
-    use_label = text(at_spot, label, color=text_color, opacity=text_opacity)
+    use_label = text{N}(at_spot, label, color=text_color, opacity=text_opacity)
 
-    EuclidPoint{2}(observable_data, plots,
+    EuclidPoint{N}(observable_data, plots,
         observable_width, observable_show_width,
         use_label)
 end
@@ -62,67 +62,12 @@ Sets up a new point in a Euclid Diagram for drawing
 - `label`: The text label to draw on the point
 - `show_label::Bool`: Whether to show the label of the point
 """
-function point(at_spot::Point2f;
+function point{N}(at_spot::Point{N, Float32};
     point_width::AbstractFloat=0.01f0, point_color=:blue,
     text_color=:blue, text_opacity::AbstractFloat=1f0, label="A")
 
     observable_data = Observable(at_spot)
-    point(observable_data,
-          point_width=point_width, point_color=point_color,
-          text_color=text_color, text_opacity=text_opacity, label=label)
-end
-
-"""
-    point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
-
-Sets up a new point in a Euclid Diagram for drawing
-
-# Arguments
-- `at_spot::Point3f`: The location of the point to draw
-- `point_width::Union{Float32,Observable{Float32}}`: The width of the point to draw
-- `point_color`: The color to draw the point with
-- `text_color`: The color to draw the text of the point label with
-- `text_opacity`: The opacity of the text label to draw
-- `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
-"""
-function point(at_spot::Observable{Point3f};
-    point_width::Union{Float32,Observable{Float32}}=0.01f0, point_color=:blue,
-    text_color=:blue, text_opacity=1f0, label="A")
-
-    observable_data = at_spot
-    observable_width = Observable(0f0)
-    observable_show_width = point_width isa Observable{Float32} ? point_width : Observable(point_width)
-
-    plots = mesh(@lift(Sphere($observable_data, $observable_width)), color=point_color)
-    use_label = text(at_spot, label, color=text_color, opacity=text_opacity)
-
-    EuclidPoint{3}(observable_data, plots,
-        observable_width, observable_show_width,
-        use_label)
-end
-
-
-"""
-    point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
-
-Sets up a new point in a Euclid Diagram for drawing
-
-# Arguments
-- `at_spot::Point3f`: The location of the point to draw
-- `point_width::AbstractFloat`: The width of the point to draw
-- `point_color`: The color to draw the point with
-- `text_color`: The color to draw the text of the point label with
-- `text_opacity::AbstractFloat`: The opacity of the text label to draw
-- `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
-"""
-function point(at_spot::Point3f;
-    point_width::AbstractFloat=0.01f0, point_color=:blue,
-    text_color=:blue, text_opacity::AbstractFloat=1f0, label="A")
-
-    observable_data = Observable(at_spot)
-    point(observable_data,
+    point{N}(observable_data,
           point_width=point_width, point_color=point_color,
           text_color=text_color, text_opacity=text_opacity, label=label)
 end
@@ -166,8 +111,8 @@ Animate drawing and perhaps then hiding point drawn in a Euclid diagram
 - `fade_start::AbstractFloat`: When to begin fading the point away from the diagram
 - `fade_end::AbstractFloat`: When to end fading the point awawy from the diagram -- it will be hidden entirely
 """
-function animate(
-    point::EuclidPoint, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
+function animate{N}(
+    point::EuclidPoint{N}, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
     fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
 
     animate(point.label, hide_until, max_at, t, fade_start=fade_start, fade_end=fade_end)
