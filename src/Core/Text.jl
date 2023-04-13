@@ -1,5 +1,5 @@
 
-export EuclidText, text, show_complete, hide, animate
+export EuclidText, EuclidText2f, EuclidText3f, text, show_complete, hide, animate
 
 """
     EuclidText2f
@@ -12,6 +12,9 @@ struct EuclidText{N}
     current_opacity::Observable{Float32}
     show_opacity::Observable{Float32}
 end
+
+EuclidText2f = EuclidText{2}
+EuclidText3f = EuclidText{3}
 
 """
     text(at_spot, text[, color=:blue, opacity=1f0])
