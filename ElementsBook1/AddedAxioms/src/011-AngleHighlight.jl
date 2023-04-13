@@ -47,7 +47,7 @@ function highlight(angle::EuclidAngle2f;
                         (larger ?
                             ([cos(π + $(angle_data.θ_start)); sin(π + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                 $center) :
-                            (isapprox($(angle_data.θ), π/2, atol=0.0001) ?
+                            ($(angle_data.θ) > π/2 || isapprox($(angle_data.θ), π/2, atol=0.0001) ?
                                 ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                     $center) :
                                 $center)))
