@@ -1,17 +1,17 @@
 
-export EuclidPoint2f, point, show_complete, hide, animate
+export EuclidPoint, point, show_complete, hide, animate
 
 """
-    EuclidPoint2f
+    EuclidPoint{N<:Int64}
 
 Describes a point to be drawn and animated in Euclid diagrams
 """
-mutable struct EuclidPoint2f
-    data::Observable{Point2f}
+mutable struct EuclidPoint{N<:Int64}
+    data::Observable{Point{N, Float32}}
     plots
     current_point_width::Observable{Float32}
     show_point_width::Observable{Float32}
-    label::EuclidText2f
+    label::EuclidText{N}
 end
 
 """
@@ -39,7 +39,7 @@ function point(at_spot::Observable{Point2f};
     plots = poly!(@lift(Circle($observable_data, $observable_width)), color=point_color)
     use_label = text(at_spot, label, color=text_color, opacity=text_opacity)
 
-    EuclidPoint2f(observable_data, plots,
+    EuclidPoint{2}(observable_data, plots,
         observable_width, observable_show_width,
         use_label)
 end
@@ -77,7 +77,7 @@ Completely show previously defined point in a Euclid diagram
 # Arguments
 - `point::EuclidPoint2f`: The point to completely show
 """
-function show_complete(point::EuclidPoint2f)
+function show_complete(point::EuclidPoint)
     point.current_point_width[] = point.show_point_width[]
     show_complete(point.label)
 end
@@ -90,7 +90,7 @@ Completely hide previously defined point in a Euclid diagram
 # Arguments
 - `point::EuclidPoint2f`: The point to completely hide
 """
-function hide(point::EuclidPoint2f)
+function hide(point::EuclidPoint)
     point.current_point_width[] = 0f0
     hide(point.label)
 end
@@ -109,7 +109,7 @@ Animate drawing and perhaps then hiding point drawn in a Euclid diagram
 - `fade_end::AbstractFloat`: When to end fading the point awawy from the diagram -- it will be hidden entirely
 """
 function animate(
-    point::EuclidPoint2f, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
+    point::EuclidPoint, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
     fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
 
     animate(point.label, hide_until, max_at, t, fade_start=fade_start, fade_end=fade_end)

@@ -1,5 +1,5 @@
 
-export euclid_axis, circle_legend, square_legend, line_legend, vline_legend, acute_angle_legend, right_angle_legend, obtuse_angle_legend
+export euclid_axis, euclid_axis3, circle_legend, square_legend, line_legend, vline_legend, acute_angle_legend, right_angle_legend, obtuse_angle_legend
 
 """
     euclid_axis(f[, title="", xlabel="https://github.com/derekshoneycutt/Euclid"])
@@ -18,6 +18,29 @@ function euclid_axis(f; title="", xlabel="https://github.com/derekshoneycutt/Euc
         xticklabelsvisible=false, yticklabelsvisible=false,
         yticksvisible=false, xticksvisible=false,
         xgridvisible=false, ygridvisible=false,
+        topspinevisible=false, bottomspinevisible=false,
+        leftspinevisible=false, rightspinevisible=false)
+end
+
+
+"""
+    euclid_axis3(f[, title="", xlabel="https://github.com/derekshoneycutt/Euclid"])
+
+Setup a 3D axis for drawing Euclid diagrams
+
+# Arguments
+- `f`: The figure to draw the axis on. (Consider using a specific scene.)
+- `title`: The title of the axis to draw. Default is empty string.
+- `xlabel`: The label to show on the bottom of the graph, below the x-axis
+"""
+function euclid_axis3(f; title="", xlabel="https://github.com/derekshoneycutt/Euclid")
+    Axis3(f,
+        aspect=DataAspect(),
+        title=title, xlabel=xlabel,
+        xticklabelsvisible=false, yticklabelsvisible=false,
+        yticksvisible=false, xticksvisible=false,
+        zticksvisible=false, ztickcslabelsvisible=false,
+        xgridvisible=false, ygridvisible=false, zgridvisible=false,
         topspinevisible=false, bottomspinevisible=false,
         leftspinevisible=false, rightspinevisible=false)
 end

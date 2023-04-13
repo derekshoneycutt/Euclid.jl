@@ -7,7 +7,7 @@ export EuclidText2fMove, move, reset, show_complete, hide, animate
 Describes a movement of text in Euclid diagrams
 """
 struct EuclidText2fMove
-    baseOn::EuclidText2f
+    baseOn::EuclidText{2}
     begin_at::Observable{Point2f}
     move_to::Observable{Point2f}
 end
@@ -23,7 +23,7 @@ Set up a movement of text on the Euclid diagram
 - `new_spot::Observable{Point2f}`: The new spot to move the text in the diagram to
 - `begin_at::Union{Point2f, Observable{Point2f}}`: The point to start the movements at (defaults to current location at time of definition)
 """
-function move(text::EuclidText2f, new_spot::Observable{Point2f};
+function move(text::EuclidText{2}, new_spot::Observable{Point2f};
               begin_at::Union{Point2f, Observable{Point2f}}=point.data[])
 
     observable_begin_at = begin_at isa Observable{Point2f} ? begin_at : Observable(begin_at)
