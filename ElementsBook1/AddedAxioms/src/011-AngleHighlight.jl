@@ -35,7 +35,7 @@ function highlight(angle::EuclidAngle2f;
     extremB = angle.extremityB
     obs_width = width isa Observable{Float32} ? width : Observable(width)
 
-    angle_data = get_angle_measure_observables(center, extremA, extremB, larger, 0.25)
+    angle_data = get_angle_measure_observables(center, extremA, extremB, larger, 0.25f0)
 
     strangle = round(1f0π, digits=4)
     dot_begin = @lift($(angle_data.θ) == strangle ?
