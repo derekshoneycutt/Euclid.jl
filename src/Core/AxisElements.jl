@@ -35,7 +35,7 @@ Setup a 3D axis for drawing Euclid diagrams
 """
 function euclid_axis3(f; title="", xlabel="https://github.com/derekshoneycutt/Euclid")
     Axis3(f,
-        aspect=DataAspect(),
+        aspect=:data,
         title=title, xlabel=xlabel,
         xticklabelsvisible=false, yticklabelsvisible=false,
         yticksvisible=false, xticksvisible=false,
