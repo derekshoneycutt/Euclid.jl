@@ -39,10 +39,9 @@ function euclid_axis3(f; title="", xlabel="https://github.com/derekshoneycutt/Eu
         title=title, xlabel=xlabel,
         xticklabelsvisible=false, yticklabelsvisible=false,
         yticksvisible=false, xticksvisible=false,
-        zticksvisible=false, ztickcslabelsvisible=false,
+        zticksvisible=false, zticklabelsvisible=false,
         xgridvisible=false, ygridvisible=false, zgridvisible=false,
-        topspinevisible=false, bottomspinevisible=false,
-        leftspinevisible=false, rightspinevisible=false)
+        xspinesvisible=false, yspinesvisible=false, zspinesvisible=false)
 end
 
 """
