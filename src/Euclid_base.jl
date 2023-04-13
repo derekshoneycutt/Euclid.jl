@@ -14,7 +14,7 @@ using GLMakie;
 using Distributions;
 using Base64;
 
-export Observable, @L_str, Point2f, Point2f0
+export Observable, @L_str, Point2f, Point2f0, Point3f, Point3f0
 
 # Load the core library features
 include("Core/Paths.jl");

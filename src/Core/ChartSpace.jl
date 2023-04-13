@@ -86,3 +86,17 @@ function euclid_legend(chart::EuclidChartSpace2d, icons, texts)
     axislegend(chart.ax, icons, texts)
 end
 
+"""
+    euclid_legend(chart, icons, text)
+
+Draw a legend on a Euclid diagram
+
+# Arguments
+- `chart::EuclidChartSpace3d`: The chart to draw the legend on
+- `icons`: The vector of icons to draw for each string in the legend
+- `texts`: The vector of texts to draw on the legend
+"""
+function euclid_legend(chart::EuclidChartSpace3d, icons, texts)
+    axislegend(chart.ax, icons, texts)
+end
+
