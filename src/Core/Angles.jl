@@ -21,10 +21,10 @@ function get_vecθs(center::Point2f, pointA::Point2f, pointB::Point2f)
     sort([vector_angle_A, vector_angle_B])
 end
 
-function get_start_end_θ(vec_θs)
+function get_start_end_θ(vec_θs, larger::Bool)
     θ_use = (vec_θs[2] - vec_θs[1] <= π) ⊻ larger ? 1 : 2
 
-    θ_start =vec_θs[θ_use]
+    θ_start = vec_θs[θ_use]
     θ_end = θ_use == 2 ? vec_θs[1] + 2π : vec_θs[2]
 
     (θ_start, θ_end)
@@ -71,7 +71,7 @@ function get_angle_measure_observables(
 
     vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
 
-    θ_start_end = @lift(get_start_end_θ($vec_θs))
+    θ_start_end = @lift(get_start_end_θ($vec_θs, larger))
 
     θ_draw_at = angle_rad isa Observable{Float32} ?
                     @lift(get_drawing_angle($center, $pointA, $pointB, angle_rad)) :
