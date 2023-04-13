@@ -48,12 +48,12 @@ function highlight(angle::EuclidAngle2f;
                         (larger ?
                             ([cos(π + $(angle_data.θ_start)); sin(π + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                 $center) :
-                            ($θ > rangle ?
+                            ($(angle_data.θ) > rangle ?
                                 ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
                                     $center) :
                                 $center)))
 
-    dot_width = @lift($θ > rangle || larger ? 0.6f0 : 0f0)
+    dot_width = @lift($(angle_data.θ) > rangle || larger ? 0.6f0 : 0f0)
 
     observable_highlight = Observable(0f0)
     observable_dot_highlight = Observable{Float32}(0f0)
@@ -63,7 +63,7 @@ function highlight(angle::EuclidAngle2f;
         lines!(@lift([$extremA, $center, $extremB]),
                 color=opacify(use_color, 0.6),
                 linewidth=observable_highlight),
-        lines!(angle_range,
+        lines!(angle_data.angle_range,
                 color=opacify(use_color, 0.6),
                 linewidth=observable_highlight),
         lines!(@lift([Point2f0($dot_begin), Point2f0($dot_end)]), linestyle=:dot,

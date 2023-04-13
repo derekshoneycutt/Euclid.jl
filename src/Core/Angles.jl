@@ -47,8 +47,8 @@ function get_angle_measure_observables(
     θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
     angle_range = @lift($θ == rangle && !larger ?
                         [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
-                        Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
-                        Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :
+                         Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
+                         Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :
                         [Point2f0([cos(t); sin(t)]*$draw_at + $center) for t in $θ_start:(π/180):$θ_end])
 
     EuclidAngleObservables(vec_θs, θ_use, θ_start, θ_end, norm_1, norm_2, draw_at, θ, angle_range)
