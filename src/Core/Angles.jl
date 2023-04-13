@@ -30,7 +30,7 @@ function get_angle_measure_observables(
         larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
 
     vec_θs = @lift(sort([fix_angle(vector_angle($center, $pointA)),
-    fix_angle(vector_angle($center, $pointB))]))
+                         fix_angle(vector_angle($center, $pointB))]))
 
     θ_use = @lift((($vec_θs)[2] - ($vec_θs)[1] <= π) ⊻ larger ? 1 : 2)
 
