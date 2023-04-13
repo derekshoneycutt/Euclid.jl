@@ -44,7 +44,7 @@ function get_drawing_angle(center::Point2f, pointA::Point2f, pointB::Point2f,
     (θ, draw_at)
 end
 
-function get_angle_rangle(θ, larger::Bool, θ_start, θ_end, draw_at, center)
+function get_angle_range(θ, larger::Bool, θ_start, θ_end, draw_at, center)
     isapprox(θ, π/2, atol=0.0001) && !larger ?
         [Point2f0([cos(θ_start); sin(θ_start)]*√(((draw_at)^2)/2) + center),
             Point2f0([cos(θ_start+π/4); sin(θ_start+π/4)]*draw_at + center),
