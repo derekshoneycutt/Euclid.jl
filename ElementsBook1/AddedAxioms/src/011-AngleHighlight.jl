@@ -37,20 +37,7 @@ function highlight(angle::EuclidAngle2f;
 
     angle_data = get_angle_measure_observables(center, extremA, extremB, larger, 0.25f0)
 
-    dot_begin = @lift(isapprox($(angle_data.θ), π, atol=0.0001) ?
-                        ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
-                            first($(angle_data.angle_range))) :
-                        $center)
-    dot_end = @lift(isapprox($(angle_data.θ), π, atol=0.0001) ?
-                        ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
-                            last($(angle_data.angle_range))) :
-                        (larger ?
-                            ([cos(π + $(angle_data.θ_start)); sin(π + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
-                                $center) :
-                            ($(angle_data.θ) > π/2 ?
-                                ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)*1.25f0) +
-                                    $center) :
-                                $center)))
+    dot_markers = get_obtuse_angle_marker(angle_data)
 
     dot_width = @lift($(angle_data.θ) > π/2 || larger ? 0.6f0 : 0f0)
 
@@ -65,7 +52,7 @@ function highlight(angle::EuclidAngle2f;
         lines!(angle_data.angle_range,
                 color=opacify(use_color, 0.6),
                 linewidth=observable_highlight),
-        lines!(@lift([Point2f0($dot_begin), Point2f0($dot_end)]), linestyle=:dot,
+        lines!(@lift([Point2f0($(dot_markers.point_begin)), Point2f0($(dot_markers.point_end))]), linestyle=:dot,
                 color=@lift(opacify(use_color, $observable_dot_highlight)),
                 linewidth=(obs_width[] / 4f0))
     ]
