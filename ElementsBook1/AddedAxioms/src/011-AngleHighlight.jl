@@ -37,9 +37,8 @@ function highlight(angle::EuclidAngle2f;
 
     vec_θs = @lift(sort([fix_angle(vector_angle($center, $extremA)),
                          fix_angle(vector_angle($center, $extremB))]))
-    θ = @lift(round(fix_angle(angle_between($extremA - $center, $extremB - $center)), digits=4))
 
-    θ_use = @lift((round(($vec_θs)[1] + $θ, digits=4) == round(($vec_θs)[2], digits=4)) ⊻ larger ? 1 : 2)
+    θ_use = @lift((($vec_θs)[2] - ($vec_θs)[1] <= π) ⊻ larger ? 1 : 2)
 
     θ_start = @lift(($vec_θs)[$θ_use])
     θ_end = @lift($θ_use == 2 ? ($vec_θs)[1] + 2π : ($vec_θs)[2])
@@ -49,7 +48,8 @@ function highlight(angle::EuclidAngle2f;
     draw_at = @lift(min($norm_1, $norm_2) * 0.25)
 
     rangle = round(π/2f0, digits=4)
-    angle_range = @lift($θ == rangle ?
+    θ = @lift(round(fix_angle(angle_between($extremA - $center, $extremB - $center)), digits=4))
+    angle_range = @lift($θ == rangle && !larger ?
                          [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
                           Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
                           Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :

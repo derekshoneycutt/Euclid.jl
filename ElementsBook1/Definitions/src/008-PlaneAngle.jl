@@ -76,7 +76,7 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, p
 
     rangle = round(π/2f0, digits=4)
     θ = @lift(round(fix_angle(angle_between($pointA - $center, $pointB - $center)), digits=4))
-    angle_range = @lift($θ == rangle ?
+    angle_range = @lift($θ == rangle && !larger ?
                          [Point2f0([cos($θ_start); sin($θ_start)]*√((($draw_at)^2)/2) + $center),
                           Point2f0([cos($θ_start+π/4); sin($θ_start+π/4)]*$draw_at + $center),
                           Point2f0([cos($θ_end); sin($θ_end)]*√((($draw_at)^2)/2) + $center)] :
