@@ -37,7 +37,7 @@ function highlight(angle::EuclidAngle2f;
 
     angle_data = get_angle_measure_observables(center, extremA, extremB, larger, 0.25f0)
 
-    dot_markers = get_obtuse_angle_marker(angle_data)
+    dot_markers = get_obtuse_angle_marker(angle_data, center, larger)
 
     dot_width = @lift($(angle_data.θ) > π/2 || larger ? 0.6f0 : 0f0)
 

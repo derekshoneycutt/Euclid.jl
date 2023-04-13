@@ -83,14 +83,16 @@ function get_angle_measure_observables(
 end
 
 """
-    get_obtuse_angle_marker(angle_data)
+    get_obtuse_angle_marker(angle_data, center, larger)
 
 Get obtuse angle marker points for drawing a line indicating obtuse angle, based on observable euclid angle data
 
 # Arguments
 - `angle_data::EuclidAngleObservables` : Observable data about the angle being evaluated
+- `center::Observable{Point2f}` : The center point of the angle - must be an observable
+- `larger::Bool` : whether evaluating the larger or smaller angle between the two lines
 """
-function get_obtuse_angle_marker(angle_data::EuclidAngleObservables)
+function get_obtuse_angle_marker(angle_data::EuclidAngleObservables, center::Observable{Point2f}, larger::Bool)
 
     dot_begin = @lift(isapprox($(angle_data.θ), π, atol=0.0001) ?
                         ([cos(π/2f0 + $(angle_data.θ_start)); sin(π/2f0 + $(angle_data.θ_start))]*($(angle_data.draw_at)/1.5f0) +
