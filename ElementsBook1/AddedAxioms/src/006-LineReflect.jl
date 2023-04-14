@@ -167,13 +167,13 @@ end
 Animate reflecting a line drawn in a Euclid diagram
 
 # Arguments
-- `reflect::EuclidLine2fReflect`: The line to animate in the diagram
+- `reflect::EuclidLineReflect`: The line to animate in the diagram
 - `begin_reflect::AbstractFloat`: The time point to begin reflecting the line at
 - `end_reflect::AbstractFloat`: The time point to finish reflecting the line at
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    reflect::EuclidLine2fReflect,
+    reflect::EuclidLineReflect,
     begin_reflect::AbstractFloat, end_reflect::AbstractFloat, t::AbstractFloat)
 
     reflect_matrix =

@@ -155,13 +155,13 @@ end
 Animate rotating a line drawn in a Euclid diagram
 
 # Arguments
-- `rotate::EuclidLine2fRotate`: The line to animate in the diagram
+- `rotate::EuclidLineRotate`: The line to animate in the diagram
 - `begin_rotate::AbstractFloat`: The time point to begin rotating the line at
 - `end_rotate::AbstractFloat`: The time point to finish rotating the line at
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    rotate::EuclidLine2fRotate,
+    rotate::EuclidLineRotate,
     begin_rotate::AbstractFloat, end_rotate::AbstractFloat, t::AbstractFloat)
 
     vectorA = rotate.vector_startA[]
