@@ -1,17 +1,18 @@
 
-export EuclidText2fMove, move, reset, show_complete, hide, animate
+export EuclidTextMove, EuclidText2fMove, EuclidText3fMove, move, reset, show_complete, hide, animate
 
 """
-    EuclidText2fMove
+    EuclidTextMove
 
 Describes a movement of text in Euclid diagrams
 """
-struct EuclidText2fMove
+struct EuclidTextMove{N}
     baseOn::EuclidText{2}
-    begin_at::Observable{Point2f}
-    move_to::Observable{Point2f}
+    begin_at::Observable{Point{N, Float32}}
+    move_to::Observable{Point{N, Float32}}
 end
-
+EuclidText2fMove = EuclidTextMove{2}
+EuclidText3fMove = EuclidTextMove{3}
 
 """
     move(text, new_spot[, begin_at])
@@ -57,7 +58,7 @@ Does not move the text
 - `begin_at::Union{Point2f, Observable{Point2f}}`: The point to begin movements at in the diagram
 - `move_to::Union{Point2f, Observable{Point2f}}`: The point to end movements to in the diagram
 """
-function reset(move::EuclidText2fMove;
+function reset(move::EuclidTextMove;
     begin_at::Union{Point2f, Observable{Point2f}}=move.baseOn.location,
     move_to::Union{Point2f, Observable{Point2f}}=move.move_to)
 
@@ -81,7 +82,7 @@ Complete a previously defined move operation for text in a Euclid diagram
 # Arguments
 - `move::EuclidText2fMove`: The description of the move to finish moving
 """
-function show_complete(move::EuclidText2fMove)
+function show_complete(move::EuclidTextMove)
     move.baseOn.location[] = move.move_to[]
 end
 
@@ -93,7 +94,7 @@ Move text in a Euclid diagram back to its starting position
 # Arguments
 - `move::EuclidText2fMove`: The description of the move to "undo"
 """
-function hide(move::EuclidText2fMove)
+function hide(move::EuclidTextMove)
     move.baseOn.location[] = move.begin_at[]
 end
 
@@ -109,7 +110,7 @@ Animate moving text drawn in a Euclid diagram
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    move::EuclidText2fMove,
+    move::EuclidTextMove,
     begin_move::AbstractFloat, end_move::AbstractFloat, t::AbstractFloat)
 
     begin_at = move.begin_at[]
@@ -122,7 +123,7 @@ function animate(
          () -> nothing,
          () -> nothing) do
         on_t = ((t-begin_move)/(end_move-begin_move)) * norm_v
-        x,y = begin_at + on_t * u
-        move.baseOn.location[] = Point2f0(x, y)
+        move.baseOn.location[] = (begin_at + on_t * u)
     end
 end
+
