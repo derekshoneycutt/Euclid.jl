@@ -30,6 +30,12 @@ function move(text::EuclidText{2}, new_spot::Observable{Point2f};
     observable_begin_at = begin_at isa Observable{Point2f} ? begin_at : Observable(begin_at)
     EuclidText2fMove(text, observable_begin_at, new_spot)
 end
+function move(text::EuclidText{3}, new_spot::Observable{Point3f};
+              begin_at::Union{Point3f, Observable{Point3f}}=point.data[])
+
+    observable_begin_at = begin_at isa Observable{Point3f} ? begin_at : Observable(begin_at)
+    EuclidText2fMove(text, observable_begin_at, new_spot)
+end
 
 """
     move(text, new_spot[, begin_at])
@@ -43,6 +49,10 @@ Set up a movement of text on the Euclid diagram
 """
 function move(text::EuclidText{2}, new_spot::Point2f;
               begin_at::Union{Point2f, Observable{Point2f}}=point.data)
+    move(text, Observable(new_spot), begin_at=begin_at)
+end
+function move(text::EuclidText{3}, new_spot::Point3f;
+              begin_at::Union{Point3f, Observable{Point3f}}=point.data)
     move(text, Observable(new_spot), begin_at=begin_at)
 end
 
@@ -61,6 +71,21 @@ Does not move the text
 function reset(move::EuclidTextMove;
     begin_at::Union{Point2f, Observable{Point2f}}=move.baseOn.location,
     move_to::Union{Point2f, Observable{Point2f}}=move.move_to)
+
+    if begin_at isa Observable{Point2f}
+        move.begin_at = begin_at
+    else
+        move.begin_at[] = begin_at
+    end
+    if move_to isa Observable{Point2f}
+        move.move_to = move_to
+    else
+        move.move_to[] = move_to
+    end
+end
+function reset(move::EuclidTextMove;
+    begin_at::Union{Point3f, Observable{Point3f}}=move.baseOn.location,
+    move_to::Union{Point3f, Observable{Point3f}}=move.move_to)
 
     if begin_at isa Observable{Point2f}
         move.begin_at = begin_at
