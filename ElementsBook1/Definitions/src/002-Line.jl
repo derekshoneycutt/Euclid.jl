@@ -28,58 +28,58 @@ Sets up a new line in a Euclid Diagram for drawing
 - `color`: The color to draw the line with
 """
 function line(extremityA::Observable{Point2f}, extremityB::Observable{Point2f};
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     observable_width = Observable(0f0)
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
 
     plots = lines!(@lift([$extremityA, $extremityB]),
-                   color=color, linewidth=(observable_width))
+                   color=color, linewidth=(observable_width), linestyle=linestyle)
 
     EuclidLine2f(extremityA, extremityB, plots,
         observable_width, observable_show_width)
 end
 function line(extremityA::Observable{Point3f}, extremityB::Observable{Point3f};
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     observable_width = Observable(0f0)
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
 
     plots = lines!(@lift([$extremityA, $extremityB]),
-                   color=color, linewidth=(observable_width))
+                   color=color, linewidth=(observable_width), linestyle=linestyle)
 
     EuclidLine3f(extremityA, extremityB, plots,
                  observable_width, observable_show_width)
 end
 function line(extremityA::Point2f, extremityB::Point2f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
-    line(Observable(extremityA), Observable(extremityB), width=width, color=color)
+    line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point3f, extremityB::Point3f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
-    line(Observable(extremityA), Observable(extremityB), width=width, color=color)
+    line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Observable{Point2f}, extremityB::Point2f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
-    line(extremityA, Observable(extremityB), width=width, color=color)
+    line(extremityA, Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Observable{Point3f}, extremityB::Point3f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
-    line(extremityA, Observable(extremityB), width=width, color=color)
+    line(extremityA, Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point2f, extremityB::Observable{Point2f};
-    width::AbstractFloat=1f0, color=:blue)
+    width::AbstractFloat=1f0, color=:blue, linestyle=:solid)
 
-    line(Observable(extremityA), extremityB, width=width, color=color)
+    line(Observable(extremityA), extremityB, width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point3f, extremityB::Observable{Point3f};
-    width::AbstractFloat=1f0, color=:blue)
+    width::AbstractFloat=1f0, color=:blue, linestyle=:solid)
 
-    line(Observable(extremityA), extremityB, width=width, color=color)
+    line(Observable(extremityA), extremityB, width=width, color=color, linestyle=linestyle)
 end
 
 """
