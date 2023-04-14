@@ -94,7 +94,7 @@ function point(at_spot::Observable{Point3f};
     observable_width = Observable(0f0)
     observable_show_width = point_width isa Observable{Float32} ? point_width : Observable(point_width)
 
-    plots = mesh(@lift(Sphere($observable_data, $observable_width)), color=point_color)
+    plots = mesh!(@lift(Sphere($observable_data, $observable_width)), color=point_color)
     use_label = text(at_spot, label, color=text_color, opacity=text_opacity)
 
     EuclidPoint{3}(observable_data, plots,
