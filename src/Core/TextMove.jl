@@ -34,7 +34,7 @@ function move(text::EuclidText{3}, new_spot::Observable{Point3f};
               begin_at::Union{Point3f, Observable{Point3f}}=point.data[])
 
     observable_begin_at = begin_at isa Observable{Point3f} ? begin_at : Observable(begin_at)
-    EuclidText2fMove(text, observable_begin_at, new_spot)
+    EuclidText3fMove(text, observable_begin_at, new_spot)
 end
 
 """
