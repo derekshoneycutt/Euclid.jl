@@ -34,7 +34,7 @@ Setup a 3D axis for drawing Euclid diagrams
 function euclid_axis3(f; title="")
     Axis3(f,
         aspect=:data,
-        title=title,
+        title=title, xlabel="", ylabel="", zlabel="",
         xticklabelsvisible=false, yticklabelsvisible=false,
         yticksvisible=false, xticksvisible=false,
         zticksvisible=false, zticklabelsvisible=false,
