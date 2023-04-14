@@ -42,12 +42,12 @@ function intersection(line1::EuclidLine, line2::EuclidLine;
     v_c = @lift($extremity_2A - $extremity_1A)
 
     squarenorm = @lift(norm($v_a × $v_b)^2)
-    possible = @lift(($v_c ⋅ ($v_a × $v_b)) != 0f0 && $squarenorm != 0f0 ? NaN : (($v_c × $v_d) ⋅ ($v_a × $v_d)) / $squarenorm)
+    possible = @lift(($v_c ⋅ ($v_a × $v_b)) != 0f0 && $squarenorm != 0f0 ? NaN : (($v_c × $v_b) ⋅ ($v_a × $v_b)) / $squarenorm)
 
     intersection = @lift(Point{length($extremity_1A), Float32}(
                             $possible === NaN ?
                                 Inf :
-                                $extremity_1A + ($v_a * Point{length($extremity_1A), Float32}($possible))))
+                                $extremity_1A + ($v_a .* $possible)))
 
 
 
