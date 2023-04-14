@@ -27,7 +27,7 @@ Create text to draw in a Euclid diagram
 - `color`: The color to draw the text in
 - `opacity::Union{Float32,Observable{Float32}}`: Maximum opacity of the text to draw
 """
-function text(at_spot::Observable{Point}, text;
+function text(at_spot::Observable{Point2f}, text;
     color=:blue, opacity::Union{Float32,Observable{Float32}}=1f0)
 
     observable_location = at_spot
@@ -37,7 +37,20 @@ function text(at_spot::Observable{Point}, text;
     rgb_text = get_color(color)
     plots = text!(observable_location, text=text, color=@lift(RGBA(rgb_text.r, rgb_text.g, rgb_text.b, $observable_opacity)))
 
-    EuclidText{N}(observable_location, plots,
+    EuclidText{2}(observable_location, plots,
+        observable_opacity, observable_show_opacity)
+end
+function text(at_spot::Observable{Point3f}, text;
+    color=:blue, opacity::Union{Float32,Observable{Float32}}=1f0)
+
+    observable_location = at_spot
+    observable_opacity = Observable(0f0)
+    observable_show_opacity = opacity isa Observable{Float32} ? opacity : Observable(opacity)
+
+    rgb_text = get_color(color)
+    plots = text!(observable_location, text=text, color=@lift(RGBA(rgb_text.r, rgb_text.g, rgb_text.b, $observable_opacity)))
+
+    EuclidText{3}(observable_location, plots,
         observable_opacity, observable_show_opacity)
 end
 
@@ -52,7 +65,10 @@ Create text to draw in a Euclid diagram
 - `color`: The color to draw the text in
 - `opacity::Float32`: Maximum opacity of the text to draw
 """
-function text(at_spot::Point, text; color=:blue, opacity::Float32=1f0)
+function text(at_spot::Point2f, text; color=:blue, opacity::Float32=1f0)
+    text(Observable(at_spot), Observable(text), color=color, opacity=opacity)
+end
+function text(at_spot::Point3f, text; color=:blue, opacity::Float32=1f0)
     text(Observable(at_spot), Observable(text), color=color, opacity=opacity)
 end
 

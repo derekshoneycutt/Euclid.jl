@@ -87,7 +87,7 @@ Sets up a new point in a Euclid Diagram for drawing
 - `show_label::Bool`: Whether to show the label of the point
 """
 function point(at_spot::Observable{Point3f};
-    point_width::Union{Float32,Observable{Float32}}=0.1f0, point_color=:blue,
+    point_width::Union{Float32,Observable{Float32}}=0.015f0, point_color=:blue,
     text_color=:blue, text_opacity=1f0, label="A")
 
     observable_data = at_spot
@@ -118,7 +118,7 @@ Sets up a new point in a Euclid Diagram for drawing
 - `show_label::Bool`: Whether to show the label of the point
 """
 function point(at_spot::Point3f;
-    point_width::AbstractFloat=0.1f0, point_color=:blue,
+    point_width::AbstractFloat=0.015f0, point_color=:blue,
     text_color=:blue, text_opacity::AbstractFloat=1f0, label="A")
 
     observable_data = Observable(at_spot)

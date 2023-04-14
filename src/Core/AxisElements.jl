@@ -13,7 +13,7 @@ Setup an axis for drawing Euclid diagrams
 function euclid_axis(f; title="")
     Axis(f,
         aspect=DataAspect(),
-        title=title, xlabel=xlabel,
+        title=title,
         xticklabelsvisible=false, yticklabelsvisible=false,
         yticksvisible=false, xticksvisible=false,
         xgridvisible=false, ygridvisible=false,
