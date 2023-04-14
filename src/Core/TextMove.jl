@@ -7,7 +7,7 @@ export EuclidTextMove, EuclidText2fMove, EuclidText3fMove, move, reset, show_com
 Describes a movement of text in Euclid diagrams
 """
 struct EuclidTextMove{N}
-    baseOn::EuclidText{2}
+    baseOn::EuclidText{N}
     begin_at::Observable{Point{N, Float32}}
     move_to::Observable{Point{N, Float32}}
 end
