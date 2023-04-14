@@ -123,7 +123,7 @@ function show_complete(rotate::EuclidLineRotate)
     uB = vectorB / norm_vB
 
     rotation_matrix =
-        if rotate.axis == :normal
+        if rotate.axis == :twod
             [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)]
         elseif rotate.axis == :x
             [1 0 0; 0 cos(θ) -sin(θ)*clockwise_mod; 0 sin(θ)*clockwise_mod cos(θ)]
