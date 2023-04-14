@@ -55,7 +55,7 @@ function highlight(point::EuclidPoint3f;
 
     plots = mesh!(@lift(Sphere($(point.data), $observable_highlight)), color=opacify(color, 0.6))
 
-    EuclidPoint2fHighlight(point, plots, observable_highlight, observable_max_width)
+    EuclidPoint3fHighlight(point, plots, observable_highlight, observable_max_width)
 end
 
 """
