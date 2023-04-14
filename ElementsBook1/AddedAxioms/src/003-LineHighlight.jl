@@ -1,17 +1,19 @@
 
-export EuclidLine2fHighlight, highlight, show_complete, hide, animate
+export EuclidLineHighlight, EuclidLine2fHighlight, EuclidLine3fHighlight, highlight, show_complete, hide, animate
 
 """
-    EuclidLine2fHighlight
+    EuclidLineHighlight
 
 Describes highlighting a line in a Euclid diagram
 """
-mutable struct EuclidLine2fHighlight
-    baseOn::EuclidLine2f
+mutable struct EuclidLineHighlight{N}
+    baseOn::EuclidLine{N}
     plots
     current_width::Observable{Float32}
     max_width::Observable{Float32}
 end
+EuclidLine2fHighlight = EuclidLineHighlight{2}
+EuclidLine3fHighlight = EuclidLineHighlight{3}
 
 """
     highlight(line[, width=2f0, color=:red])
@@ -19,7 +21,7 @@ end
 Set up highlighting a single line in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2f`: The line to highlight in the diagram
+- `line::EuclidLine`: The line to highlight in the diagram
 - `width::Union{Float32, Observable{Float32}}`: The width of the line to draw the highlight
 - `color`: The color to use in highlighting the line
 """
@@ -28,12 +30,22 @@ function highlight(line::EuclidLine2f; width::Union{Float32, Observable{Float32}
     observable_highlight = Observable(0f0)
     observable_max_width = width isa Observable{Float32} ? width : Observable(width)
 
-    use_color = get_color(color)
     plots = lines!(@lift([$(line.extremityA), $(line.extremityB)]),
-                    color=RGBA(use_color.r, use_color.g, use_color.b, 0.6),
+                    color=opacify(color, 0.6),
                     linewidth=observable_highlight)
 
     EuclidLine2fHighlight(line, plots, observable_highlight, observable_max_width)
+end
+function highlight(line::EuclidLine3f; width::Union{Float32, Observable{Float32}}=2f0, color=:red)
+
+    observable_highlight = Observable(0f0)
+    observable_max_width = width isa Observable{Float32} ? width : Observable(width)
+
+    plots = lines!(@lift([$(line.extremityA), $(line.extremityB)]),
+                    color=opacify(color, 0.6),
+                    linewidth=observable_highlight)
+
+    EuclidLine3fHighlight(line, plots, observable_highlight, observable_max_width)
 end
 
 """
@@ -42,9 +54,9 @@ end
 Complete a previously defined highlight operation for a line in a Euclid diagram. It will be fully highlighted.
 
 # Arguments
-- `line::EuclidLine2fHighlight`: The description of the highlight to finish
+- `line::EuclidLineHighlight`: The description of the highlight to finish
 """
-function show_complete(line::EuclidLine2fHighlight)
+function show_complete(line::EuclidLineHighlight)
     line.current_width[] = line.max_width[]
 end
 
@@ -54,9 +66,9 @@ end
 Hide highlights of a line in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2fHighlight`: The description of the highlight to completely hide
+- `line::EuclidLineHighlight`: The description of the highlight to completely hide
 """
-function hide(line::EuclidLine2fHighlight)
+function hide(line::EuclidLineHighlight)
     line.current_width[] = 0f0
 end
 
@@ -66,14 +78,14 @@ end
 Animate highlighting a line in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2fHighlight`: The line to animate in the diagram
+- `line::EuclidLineHighlight`: The line to animate in the diagram
 - `hide_until::AbstractFloat`: The time point to begin highlighting the line at
 - `max_at::AbstractFloat`: The time point to have maximum highlight at
 - `min_at::AbstractFloat`: The time point to finish going back to no more highlighting
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    line::EuclidLine2fHighlight, hide_until::AbstractFloat, max_at::AbstractFloat, min_at::AbstractFloat, t::AbstractFloat)
+    line::EuclidLineHighlight, hide_until::AbstractFloat, max_at::AbstractFloat, min_at::AbstractFloat, t::AbstractFloat)
 
     perform(t, hide_until, max_at, max_at + 0.00001, min_at,
         () -> line.current_width[] = 0f0,

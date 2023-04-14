@@ -1,19 +1,22 @@
 
-export EuclidLine2fRotate, rotate, reset, show_complete, hide, animate
+export EuclidLineRotate, EuclidLine2fRotate, EuclidLine3fRotate, rotate, reset, show_complete, hide, animate
 
 """
-    EuclidLine2fRotate
+    EuclidLineRotate
 
 Describes rotating a line in a Euclid diagram
 """
-mutable struct EuclidLine2fRotate
-    baseOn::EuclidLine2f
+mutable struct EuclidLineRotate{N}
+    baseOn::EuclidLine{N}
     rotation::Observable{Float32}
-    anchor::Observable{Point2f}
-    vector_startA::Observable{Point2f}
-    vector_startB::Observable{Point2f}
+    anchor::Observable{Point{N, Float32}}
+    vector_startA::Observable{Point{N, Float32}}
+    vector_startB::Observable{Point{N, Float32}}
     rotate_clockwise::Bool
+    axis::Symbol
 end
+EuclidLine2fRotate = EuclidLineRotate{2}
+EuclidLine3fRotate = EuclidLineRotate{3}
 
 """
     rotate(line, rotation[, anchor=line.extremityA, clockwise=false])
@@ -21,9 +24,10 @@ end
 Set up a rotation of a line on the Euclid diagram
 
 # Arguments
-- `line::EuclidLine2f`: The line to rotate in the diagram
-- `rotation::Point2f`: The angle to rotate the line in the diagram to
-- `anchor::Point2f`: The fixed anchor point to rotate about
+- `line::EuclidLine`: The line to rotate in the diagram
+- `rotation::Float32`: The angle to rotate the line in the diagram to
+- `axis::Symbol` : In 3D lines, the axis of rotation (:x, :y, :z)
+- `anchor::Point`: The fixed anchor point to rotate about
 - `clockwise::Bool`: Whether to perform clockwise rotation. Otherwise does counter-clockwise.
 """
 function rotate(line::EuclidLine2f, rotation::Observable{Float32};
@@ -32,22 +36,26 @@ function rotate(line::EuclidLine2f, rotation::Observable{Float32};
     observable_anchor = anchor isa Observable{Point2f} ? anchor : Observable(anchor)
     vectorA = @lift(line.extremityA[] - $observable_anchor)
     vectorB = @lift(line.extremityB[] - $observable_anchor)
-    EuclidLine2fRotate(line, rotation, observable_anchor, vectorA, vectorB, clockwise)
+    EuclidLine2fRotate(line, rotation, observable_anchor, vectorA, vectorB, clockwise, :twod)
 end
-
-"""
-    rotate(line, rotation[, anchor=line.extremityA, clockwise=false])
-
-Set up a rotation of a line on the Euclid diagram
-
-# Arguments
-- `line::EuclidLine2f`: The line to rotate in the diagram
-- `rotation::Point2f`: The angle to rotate the line in the diagram to
-- `anchor::Point2f`: The fixed anchor point to rotate about
-- `clockwise::Bool`: Whether to perform clockwise rotation. Otherwise does counter-clockwise.
-"""
 function rotate(line::EuclidLine2f, rotation::Float32;
                 anchor::Union{Point2f, Observable{Point2f}}=line.extremityA, clockwise::Bool=false)
+
+    rotate(line, Observable(rotation), anchor=anchor, clockwise=clockwise)
+end
+function rotate(line::EuclidLine3f, rotation::Observable{Float32}, axis::Symbol;
+                anchor::Union{Point3f, Observable{Point3f}}=line.extremityA, clockwise::Bool=false)
+
+    if axis != :x && axis != :y && axis != :z
+        throw("Axis of rotation for 3D lines must be specified as :x, :y, or :z")
+    end
+    observable_anchor = anchor isa Observable{Point2f} ? anchor : Observable(anchor)
+    vectorA = @lift(line.extremityA[] - $observable_anchor)
+    vectorB = @lift(line.extremityB[] - $observable_anchor)
+    EuclidLine3fRotate(line, rotation, observable_anchor, vectorA, vectorB, clockwise, axis)
+end
+function rotate(line::EuclidLine3f, rotation::Float32, axis::Symbol;
+                anchor::Union{Point3f, Observable{Point3f}}=line.extremityA, clockwise::Bool=false)
 
     rotate(line, Observable(rotation), anchor=anchor, clockwise=clockwise)
 end
@@ -60,6 +68,7 @@ Reset a rotation animation for a line in a Euclid Diagram to new positions
 # Arguments
 - `rotate::EuclidLine2fRotate`: The description of the rotation to reset
 - `rotation::Union{Point2f, Observable{Point2f}}`: The angle to rotate the line in the diagram to
+- `axis::Symbol` : In 3D lines, the axis of rotation (:x, :y, :z)
 - `anchor::Union{Point2f, Observable{Point2f}}`: The fixed anchor point to rotate about
 - `clockwise::Bool`: Whether to perform clockwise rotation. Otherwise does counter-clockwise.
 """
@@ -76,6 +85,23 @@ function reset(rotate::EuclidLine2fRotate, rotation::Union{Point2f, Observable{P
     rotate.vector_startA = vectorA
     rotate.vector_startB = vectorB
     rotate.rotate_clockwise = clockwise
+    rotate
+end
+function reset(rotate::EuclidLine3fRotate, rotation::Union{Point3f, Observable{Point3f}}, axis::Symbol;
+                anchor::Union{Point3f, Observable{Point3f}}=rotate.baseOn.extremityA,
+                clockwise::Bool=rotate.rotate_clockwise)
+
+    observable_rotation = rotation isa Observable{Point2f} ? rotation : Observable(rotation)
+    observable_anchor = anchor isa Observable{Point2f} ? anchor : Observable(anchor)
+    vectorA = @lift(rotate.baseOn.extremityA[] - $observable_anchor)
+    vectorB = @lift(rotate.baseOn.extremityB[] - $observable_anchor)
+    rotate.rotation = observable_rotation
+    rotate.anchor = observable_anchor
+    rotate.vector_startA = vectorA
+    rotate.vector_startB = vectorB
+    rotate.rotate_clockwise = clockwise
+    rotate.axis = axis
+    rotate
 end
 
 """
@@ -84,9 +110,9 @@ end
 Complete a previously defined rotation operation for a line in a Euclid diagram
 
 # Arguments
-- `rotate::EuclidLine2fRotate`: The description of the rotation to finish rotating
+- `rotate::EuclidLineRotate`: The description of the rotation to finish rotating
 """
-function show_complete(rotate::EuclidLine2fRotate)
+function show_complete(rotate::EuclidLineRotate)
     clockwise_mod = rotate.rotate_clockwise ? -1 : 1
     θ = rotate.rotation[]
     vectorA = rotate.vector_startA[]
@@ -95,10 +121,19 @@ function show_complete(rotate::EuclidLine2fRotate)
     norm_vB = norm(vectorB)
     uA = vectorA / norm_vA
     uB = vectorB / norm_vB
-    x,y = rotate.anchor[] + [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)] * uA * norm_vA
-    rotate.baseOn.extremityA[] = Point2f0(x,y)
-    x,y = rotate.anchor[] + [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)] * uB * norm_vB
-    rotate.baseOn.extremityB[] = Point2f0(x,y)
+
+    rotation_matrix =
+        if rotate.axis == :normal
+            [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)]
+        elseif rotate.axis == :x
+            [1 0 0; 0 cos(θ) -sin(θ)*clockwise_mod; 0 sin(θ)*clockwise_mod cos(θ)]
+        elseif rotate.axis == :y
+            [cos(θ) 0 sin(θ)*clockwise_mod; 0 1 0; -sin(θ)*clockwise_mod 0 cos(θ)]
+        elseif rotate.axis == :z
+            [cos(θ) -sin(θ)*clockwise_mod 0; sin(θ)*clockwise_mod cos(θ) 0; 0 0 1]
+        end
+    rotate.baseOn.extremityA[] = (rotate.anchor[] + rotation_matrix * uA * norm_vA)
+    rotate.baseOn.extremityB[] = (rotate.anchor[] + rotation_matrix * uB * norm_vB)
 end
 
 """
@@ -107,13 +142,11 @@ end
 Rotate a line in a Euclid diagram back to its starting position
 
 # Arguments
-- `rotate::EuclidLine2fRotate`: The description of the rotation to "undo"
+- `rotate::EuclidLineRotate`: The description of the rotation to "undo"
 """
-function hide(rotate::EuclidLine2fRotate)
-    x,y = rotate.vector_startA[] + rotate.anchor[]
-    rotate.baseOn.extremityA[] = Point2f0(x,y)
-    x,y = rotate.vector_startB[] + rotate.anchor[]
-    rotate.baseOn.extremityB[] = Point2f0(x,y)
+function hide(rotate::EuclidLineRotate)
+    rotate.baseOn.extremityA[] = rotate.vector_startA[] + rotate.anchor[]
+    rotate.baseOn.extremityB[] = rotate.vector_startB[] + rotate.anchor[]
 end
 
 """
@@ -147,15 +180,21 @@ function animate(
          () -> nothing) do
         on_t = ((t - begin_rotate)/(end_rotate - begin_rotate)) * rotate.rotation[]
         if on_t > 0
-            x,y = rotate.anchor[] + [cos(on_t) -sin(on_t)*clockwise_mod; sin(on_t)*clockwise_mod cos(on_t)] * uA * norm_vA
-            rotate.baseOn.extremityA[] = Point2f0(x,y)
-            x,y = rotate.anchor[] + [cos(on_t) -sin(on_t)*clockwise_mod; sin(on_t)*clockwise_mod cos(on_t)] * uB * norm_vB
-            rotate.baseOn.extremityB[] = Point2f0(x,y)
+            rotation_matrix =
+                if rotate.axis == :twod
+                    [cos(on_t) -sin(on_t)*clockwise_mod; sin(on_t)*clockwise_mod cos(on_t)]
+                elseif rotate.axis == :x
+                    [1 0 0; 0 cos(on_t) -sin(on_t)*clockwise_mod; 0 sin(on_t)*clockwise_mod cos(on_t)]
+                elseif rotate.axis == :y
+                    [cos(on_t) 0 sin(on_t)*clockwise_mod; 0 1 0; -sin(on_t)*clockwise_mod 0 cos(on_t)]
+                elseif rotate.axis == :z
+                    [cos(on_t) -sin(on_t)*clockwise_mod 0; sin(on_t)*clockwise_mod cos(on_t) 0; 0 0 1]
+                end
+            rotate.baseOn.extremityA[] = (rotate.anchor[] + rotation_matrix * uA * norm_vA)
+            rotate.baseOn.extremityB[] = (rotate.anchor[] + rotation_matrix * uB * norm_vB)
         else
-            x,y = vectorA + rotate.anchor[]
-            rotate.baseOn.extremityA[] = Point2f0(x,y)
-            x,y = vectorB + rotate.anchor[]
-            rotate.baseOn.extremityB[] = Point2f0(x,y)
+            rotate.baseOn.extremityA[] = vectorA + rotate.anchor[]
+            rotate.baseOn.extremityB[] = vectorB + rotate.anchor[]
         end
     end
 end

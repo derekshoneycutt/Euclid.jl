@@ -1,18 +1,20 @@
 
-export EuclidLine2f, line, show_complete, hide, animate
+export EuclidLine, EuclidLine2f, EuclidLine3f, line, show_complete, hide, animate
 
 """
-    EuclidLine2f
+    EuclidLine{N}
 
 Describes a line to be drawn and animated in Euclid diagrams
 """
-mutable struct EuclidLine2f
-    extremityA::Observable{Point2f}
-    extremityB::Observable{Point2f}
+mutable struct EuclidLine{N}
+    extremityA::Observable{Point{N, Float32}}
+    extremityB::Observable{Point{N, Float32}}
     plots
     current_width::Observable{Float32}
     show_width::Observable{Float32}
 end
+EuclidLine2f = EuclidLine{2}
+EuclidLine3f = EuclidLine{3}
 
 """
     line(extremityA, extremityB[, width=1f0, color=:blue])
@@ -32,58 +34,49 @@ function line(extremityA::Observable{Point2f}, extremityB::Observable{Point2f};
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
 
     plots = lines!(@lift([$extremityA, $extremityB]),
-             color=color, linewidth=(observable_width))
+                   color=color, linewidth=(observable_width))
 
     EuclidLine2f(extremityA, extremityB, plots,
         observable_width, observable_show_width)
 end
+function line(extremityA::Observable{Point3f}, extremityB::Observable{Point3f};
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
-"""
-    line(extremityA, extremityB[, width=1f0, color=:blue])
+    observable_width = Observable(0f0)
+    observable_show_width = width isa Observable{Float32} ? width : Observable(width)
 
-Sets up a new line in a Euclid Diagram for drawing
+    plots = lines!(@lift([$extremityA, $extremityB]),
+                   color=color, linewidth=(observable_width))
 
-# Arguments
-- `extremityA::Point2f`: The location of one extremity of the line to draw
-- `extremityB::Point2f`: The location of a second extremity of a line to draw
-- `width::Union{Float32, Observable{Float32}}`: The width of the line to draw
-- `color`: The color to draw the line with
-"""
+    EuclidLine3f(extremityA, extremityB, plots,
+                 observable_width, observable_show_width)
+end
 function line(extremityA::Point2f, extremityB::Point2f;
     width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
     line(Observable(extremityA), Observable(extremityB), width=width, color=color)
 end
+function line(extremityA::Point3f, extremityB::Point3f;
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
-"""
-    line(extremityA, extremityB[, width=1f0, color=:blue])
-
-Sets up a new line in a Euclid Diagram for drawing
-
-# Arguments
-- `extremityA::Point2f`: The location of one extremity of the line to draw
-- `extremityB::Point2f`: The location of a second extremity of a line to draw
-- `width::Union{Float32, Observable{Float32}}`: The width of the line to draw
-- `color`: The color to draw the line with
-"""
+    line(Observable(extremityA), Observable(extremityB), width=width, color=color)
+end
 function line(extremityA::Observable{Point2f}, extremityB::Point2f;
     width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
     line(extremityA, Observable(extremityB), width=width, color=color)
 end
+function line(extremityA::Observable{Point3f}, extremityB::Point3f;
+    width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
-"""
-    line(extremityA, extremityB[, width=1f0, color=:blue])
-
-Sets up a new line in a Euclid Diagram for drawing
-
-# Arguments
-- `extremityA::Point2f`: The location of one extremity of the line to draw
-- `extremityB::Point2f`: The location of a second extremity of a line to draw
-- `width::AbstractFloat`: The width of the line to draw
-- `color`: The color to draw the line with
-"""
+    line(extremityA, Observable(extremityB), width=width, color=color)
+end
 function line(extremityA::Point2f, extremityB::Observable{Point2f};
+    width::AbstractFloat=1f0, color=:blue)
+
+    line(Observable(extremityA), extremityB, width=width, color=color)
+end
+function line(extremityA::Point3f, extremityB::Observable{Point3f};
     width::AbstractFloat=1f0, color=:blue)
 
     line(Observable(extremityA), extremityB, width=width, color=color)
@@ -95,9 +88,9 @@ end
 Completely show previously defined line in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2f`: The line to completely show
+- `line::EuclidLine`: The line to completely show
 """
-function show_complete(line::EuclidLine2f)
+function show_complete(line::EuclidLine)
     line.current_width[] = line.show_width[]
 end
 
@@ -107,9 +100,9 @@ end
 Completely hide previously defined line in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2f`: The line to completely hide
+- `line::EuclidLine`: The line to completely hide
 """
-function hide(line::EuclidLine2f)
+function hide(line::EuclidLine)
     line.current_width[] = 0f0
 end
 
@@ -119,7 +112,7 @@ end
 Animate drawing and perhaps then hiding line drawn in a Euclid diagram
 
 # Arguments
-- `line::EuclidLine2f`: The line to animate in the diagram
+- `line::EuclidLine`: The line to animate in the diagram
 - `hide_until::AbstractFloat`: The point to hide the line until
 - `max_at::AbstractFloat`: The time to max drawing the line at -- when it is fully drawn
 - `t::AbstractFloat`: The current timeframe of the animation
@@ -127,7 +120,7 @@ Animate drawing and perhaps then hiding line drawn in a Euclid diagram
 - `fade_end::AbstractFloat`: When to end fading the line awawy from the diagram -- it will be hidden entirely
 """
 function animate(
-    line::EuclidLine2f, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
+    line::EuclidLine, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
     fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
 
     perform(t, hide_until, max_at, fade_start, fade_end,
