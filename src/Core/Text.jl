@@ -22,12 +22,12 @@ EuclidText3f = EuclidText{3}
 Create text to draw in a Euclid diagram
 
 # Arguments
-- `at_spot::Observable{Point{N, Float32}}`: Point to draw text at
+- `at_spot::Observable{Point}`: Point to draw text at
 - `text`: The text to draw
 - `color`: The color to draw the text in
 - `opacity::Union{Float32,Observable{Float32}}`: Maximum opacity of the text to draw
 """
-function text{N}(at_spot::Observable{Point{N, Float32}}, text;
+function text(at_spot::Observable{Point}, text;
     color=:blue, opacity::Union{Float32,Observable{Float32}}=1f0)
 
     observable_location = at_spot
@@ -47,12 +47,12 @@ end
 Create text to draw in a Euclid diagram
 
 # Arguments
-- `at_spot::Point{N, Float32}`: Point to draw text at
+- `at_spot::Point`: Point to draw text at
 - `text`: The text to draw
 - `color`: The color to draw the text in
 - `opacity::Float32`: Maximum opacity of the text to draw
 """
-function text{N}(at_spot::Point{N, Float32}, text; color=:blue, opacity::Float32=1f0)
+function text(at_spot::Point, text; color=:blue, opacity::Float32=1f0)
     text(Observable(at_spot), Observable(text), color=color, opacity=opacity)
 end
 
@@ -94,8 +94,8 @@ Animate drawing and perhaps then hiding text drawn in a Euclid diagram
 - `fade_start::AbstractFloat`: When to begin fading the text away from the diagram
 - `fade_end::AbstractFloat`: When to end fading the text awawy from the diagram -- it will be hidden entirely
 """
-function animate{N}(
-    text::EuclidText{N}, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
+function animate(
+    text::EuclidText, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
     fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
 
     perform(t, hide_until, max_at, fade_start, fade_end,
