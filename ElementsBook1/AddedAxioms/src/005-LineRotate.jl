@@ -57,7 +57,7 @@ end
 function rotate(line::EuclidLine3f, rotation::Float32, axis::Symbol;
                 anchor::Union{Point3f, Observable{Point3f}}=line.extremityA, clockwise::Bool=false)
 
-    rotate(line, Observable(rotation), anchor=anchor, clockwise=clockwise)
+    rotate(line, Observable(rotation), axis, anchor=anchor, clockwise=clockwise)
 end
 
 """
