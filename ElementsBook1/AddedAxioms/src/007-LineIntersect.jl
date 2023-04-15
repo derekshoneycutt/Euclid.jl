@@ -53,7 +53,7 @@ function intersection(line1::EuclidLine2f, line2::EuclidLine2f;
                0f0 :
                $observable_in_width)
 
-    point(intersection,
+    point(Point2f0(x,y),
             point_width=use_point_width, point_color=point_color,
             text_color=text_color, text_opacity=true_text_opacity, label=label)
 end
@@ -81,12 +81,9 @@ function intersection(line1::EuclidLine3f, line2::EuclidLine3f;
     c_cross_b = @lift($v_c × $v_b)
     possible = @lift($check_intersect != 0f0 && $squarenorm != 0f0 ? NaN : ($c_cross_b ⋅ $a_cross_b) / $squarenorm)
 
-    intersection = @lift(Point{length($extremity_1A), Float32}(
-                            $possible === NaN ?
-                                Inf :
-                                $extremity_1A + ($v_a .* $possible)))
-
-
+    intersection = @lift(Point3f0($possible === NaN ?
+                                    Inf :
+                                    $extremity_1A + ($v_a .* $possible)))
 
     text_opacity_observable = text_opacity isa Observable{Float32} ?
                               text_opacity :
