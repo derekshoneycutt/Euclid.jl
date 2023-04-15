@@ -53,7 +53,7 @@ function intersection(line1::EuclidLine2f, line2::EuclidLine2f;
                0f0 :
                $observable_in_width)
 
-    point(Point2f0(x,y),
+    point(@lift(Point2f0($x,$y)),
             point_width=use_point_width, point_color=point_color,
             text_color=text_color, text_opacity=true_text_opacity, label=label)
 end
