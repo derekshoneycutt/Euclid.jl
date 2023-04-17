@@ -12,7 +12,7 @@ mutable struct EuclidChartSpace
 end
 
 """
-    euclid_chart([title="", xlims=(0,0), ylims=(0,0), bottom_label="https://github.com/derekshoneycutt/Euclid"])
+    euclid_chart([title="", xlims=(0,0), ylims=(0,0), bottom_label="https://derekshoneycutt.github.io/Euclid/"])
 
 Sets up a new chart space for drawing euclid diagrams
 
@@ -22,7 +22,7 @@ Sets up a new chart space for drawing euclid diagrams
 - `ylims`: The y limits of drawing : should be a 2-tupel of y limits
 - `bottom_label`: The label to print at the bottom of the image
 """
-function euclid_chart(; title::String="", xlims=(0,0), ylims=(0,0), bottom_label="https://github.com/derekshoneycutt/Euclid")
+function euclid_chart(; title::String="", xlims=(0,0), ylims=(0,0), bottom_label="https://derekshoneycutt.github.io/Euclid/")
     set_theme!(theme_dark())
     f = Figure()
     ax = euclid_axis(f[1,1], title=title)
@@ -42,7 +42,7 @@ function euclid_chart(; title::String="", xlims=(0,0), ylims=(0,0), bottom_label
 end
 
 """
-    euclid_chart3([title="", xlims=(0,0), ylims=(0,0), bottom_label="https://github.com/derekshoneycutt/Euclid"])
+    euclid_chart3([title="", xlims=(0,0), ylims=(0,0), bottom_label="https://derekshoneycutt.github.io/Euclid/"])
 
 Sets up a new chart space for drawing euclid diagrams
 
@@ -52,7 +52,7 @@ Sets up a new chart space for drawing euclid diagrams
 - `ylims`: The y limits of drawing : should be a 2-tupel of y limits
 - `bottom_label`: The label to print at the bottom of the image
 """
-function euclid_chart3(; title::String="", xlims=(0,0), ylims=(0,0), zlims=(0,0), bottom_label="https://github.com/derekshoneycutt/Euclid")
+function euclid_chart3(; title::String="", xlims=(0,0), ylims=(0,0), zlims=(0,0), bottom_label="https://derekshoneycutt.github.io/Euclid/")
     set_theme!(theme_dark())
     f = Figure()
     ax = euclid_axis3(f[1,1], title=title)
