@@ -1,16 +1,18 @@
 
-export EuclidSurface2fHighlightExtremities, highlight_extremities, show_complete, hide, animate
+export EuclidSurfaceHighlightExtremities, EuclidSurface2fHighlightExtremities, EuclidSurface3fHighlightExtremities, highlight_extremities, show_complete, hide, animate
 
 """
-    EuclidSurface2fHighlightExtremities
+    EuclidSurfaceHighlightExtremities
 
 Describes highlighting a surface's extremities in a Euclid diagram
 """
-mutable struct EuclidSurface2fHighlightExtremities
-    baseOn::EuclidSurface2f
-    extremities::Observable{Vector{EuclidLine2f}}
-    highlights::Observable{Vector{EuclidLine2fHighlight}}
+mutable struct EuclidSurfaceHighlightExtremities{N}
+    baseOn::EuclidSurface{N}
+    extremities::Observable{Vector{EuclidLine{N}}}
+    highlights::Observable{Vector{EuclidLineHighlight{N}}}
 end
+EuclidSurface2fHighlightExtremities = EuclidSurfaceHighlightExtremities{2}
+EuclidSurface3fHighlightExtremities = EuclidSurfaceHighlightExtremities{3}
 
 """
     highlight_extremities(surface[, point_width=0.02f0, point_color=:blue, text_color=:blue, text_opacity=1f0, labelA="A", labelB="B"])
@@ -18,7 +20,7 @@ end
 Set up highlighting the extremities of a single surface in a Euclid diagram
 
 # Arguments
-- `surface::EuclidSurface2f`: The surface to highlight in the diagram
+- `surface::EuclidSurface`: The surface to highlight in the diagram
 - `point_width::Union{Float32, Observable{Float32}}`: The width of the circle to draw the highlight
 - `point_color`: The color to use in highlighting the surface
 - `text_color`: Color of the text to write the labels of the points with
@@ -40,6 +42,38 @@ function highlight_extremities(surface::EuclidSurface2f;
 
     EuclidSurface2fHighlightExtremities(surface, extremities, highlights)
 end
+function highlight_extremities(surface::EuclidSurface3f;
+                               width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
+
+    observable_width = width isa Observable ? width : Observable(width)
+    true_line_width = @lift($observable_width * 0.001f0)
+
+
+    # 3D drawings are in triangles, so there will probably be overlapping non-extremity lines that need to be purged out
+    possibilities = @lift([[x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1]]
+                            for (i,x) in enumerate($(surface.from_points))])
+    arematchinglines(x,y) = (x[1] == y[1] && x[2] == y[2]) || (x[1]== y[2] && x[2] == y[1])
+    limit_points =
+        @lift(reduce($(possibilities)) do x,y
+            if x isa Array
+                first_match = findfirst(el -> arematchinglines(el,y), x)
+                if first_match === nothing
+                    vcat(x, [y])
+                else
+                    filter(el -> !arematchinglines(el,y), x)
+                end
+            else
+                [x,y]
+            end
+        end)
+
+    extremities = @lift([line(x, y, width=true_line_width, color=color)
+                            for (x,y) in $(limit_points)])
+    highlights = @lift([highlight(x, width=observable_width, color=color)
+                            for x in $extremities])
+
+    EuclidSurface3fHighlightExtremities(surface, extremities, highlights)
+end
 
 """
     show_complete(surface)
@@ -47,9 +81,9 @@ end
 Complete a previously defined highlight operation for a surface's extremities in a Euclid diagram. It will be fully highlighted.
 
 # Arguments
-- `surface::EuclidSurface2fHighlightExtremities`: The description of the highlight to finish
+- `surface::EuclidSurfaceHighlightExtremities`: The description of the highlight to finish
 """
-function show_complete(surface::EuclidSurface2fHighlightExtremities)
+function show_complete(surface::EuclidSurfaceHighlightExtremities)
     for x in surface.extremities[]
         show_complete(x)
     end
@@ -64,9 +98,9 @@ end
 Hide highlights of a surface's extremities in a Euclid diagram
 
 # Arguments
-- `surface::EuclidSurface2fHighlightExtremities`: The description of the highlight to completely hide
+- `surface::EuclidSurfaceHighlightExtremities`: The description of the highlight to completely hide
 """
-function hide(surface::EuclidSurface2fHighlightExtremities)
+function hide(surface::EuclidSurfaceHighlightExtremities)
     for x in surface.extremities[]
         hide(x)
     end
@@ -81,13 +115,13 @@ end
 Animate highlighting a surface's extremities in a Euclid diagram
 
 # Arguments
-- `surface::EuclidSurface2fHighlightExtremities`: The surface to animate in the diagram
+- `surface::EuclidSurfaceHighlightExtremities`: The surface to animate in the diagram
 - `hide_until::AbstractFloat`: The time point to begin highlighting the surface at
 - `max_at::AbstractFloat`: The time point to have maximum highlight at
 - `min_at::AbstractFloat`: The time point to finish going back to no more highlighting
 - `t::AbstractFloat`: The current timeframe of the animation
 """
-function animate(surface::EuclidSurface2fHighlightExtremities, hide_until::AbstractFloat,
+function animate(surface::EuclidSurfaceHighlightExtremities, hide_until::AbstractFloat,
                  max_at::AbstractFloat, min_at::AbstractFloat, t::AbstractFloat)
 
     max_time = max_at - hide_until
