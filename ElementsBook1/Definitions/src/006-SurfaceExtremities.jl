@@ -55,7 +55,7 @@ function highlight_extremities(surface::EuclidSurface3f;
     arematchinglines(x,y) = (x[1] == y[1] && x[2] == y[2]) || (x[1]== y[2] && x[2] == y[1])
     limit_points =
         @lift(reduce($(possibilities)) do x,y
-            if x isa Array
+            if x isa Array && !(x isa Vector{2,Point3f0})
                 first_match = findfirst(el -> arematchinglines(el,y), x)
                 if first_match === nothing
                     vcat(x, [y])
