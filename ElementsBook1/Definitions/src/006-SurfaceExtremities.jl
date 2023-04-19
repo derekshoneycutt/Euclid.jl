@@ -48,14 +48,17 @@ function highlight_extremities(surface::EuclidSurface3f;
     observable_width = width isa Observable ? width : Observable(width)
     true_line_width = @lift($observable_width * 0.001f0)
 
-
     # 3D drawings are in triangles, so there will probably be overlapping non-extremity lines that need to be purged out
-    possibilities = @lift([[x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1]]
+    struct line_points
+        x::Point3f0
+        y::Point3f0
+    end
+    possibilities = @lift([line_points(x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1])
                             for (i,x) in enumerate($(surface.from_points))])
-    arematchinglines(x,y) = (x[1] == y[1] && x[2] == y[2]) || (x[1]== y[2] && x[2] == y[1])
+    arematchinglines(x,y) = (x.x == y.x && x.y == y.y) || (x.x== y.y && x.y == y.x)
     limit_points =
         @lift(reduce($(possibilities)) do x,y
-            if x isa Array && !(x isa Vector{Point3f0} && length(x) == 2)
+            if x isa Array
                 first_match = findfirst(el -> arematchinglines(el,y), x)
                 if first_match === nothing
                     vcat(x, [y])
@@ -67,8 +70,8 @@ function highlight_extremities(surface::EuclidSurface3f;
             end
         end)
 
-    extremities = @lift([line(x, y, width=true_line_width, color=color)
-                            for (x,y) in $(limit_points)])
+    extremities = @lift([line(lp.x, lp.y, width=true_line_width, color=color)
+                            for lp in $(limit_points)])
     highlights = @lift([highlight(x, width=observable_width, color=color)
                             for x in $extremities])
 
