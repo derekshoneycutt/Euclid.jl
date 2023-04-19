@@ -14,6 +14,11 @@ end
 EuclidSurface2fHighlightExtremities = EuclidSurfaceHighlightExtremities{2}
 EuclidSurface3fHighlightExtremities = EuclidSurfaceHighlightExtremities{3}
 
+struct line_points
+    x::Point3f0
+    y::Point3f0
+end
+
 """
     highlight_extremities(surface[, point_width=0.02f0, point_color=:blue, text_color=:blue, text_opacity=1f0, labelA="A", labelB="B"])
 
@@ -49,10 +54,6 @@ function highlight_extremities(surface::EuclidSurface3f;
     true_line_width = @lift($observable_width * 0.001f0)
 
     # 3D drawings are in triangles, so there will probably be overlapping non-extremity lines that need to be purged out
-    struct line_points
-        x::Point3f0
-        y::Point3f0
-    end
     possibilities = @lift([line_points(x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1])
                             for (i,x) in enumerate($(surface.from_points))])
     arematchinglines(x,y) = (x.x == y.x && x.y == y.y) || (x.x== y.y && x.y == y.x)
