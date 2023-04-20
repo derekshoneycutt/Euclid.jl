@@ -2,18 +2,20 @@
 export EuclidPlaneSurface2f, highlight_plane, show_complete, hide, animate
 
 """
-    EuclidPlaneSurface2f
+    EuclidPlaneSurface
 
 Describes highlighting a plane surface in a Euclid diagram
 """
-mutable struct EuclidPlaneSurface2f
-    start::Observable{Point2f}
-    width::Observable{Float32}
-    height::Observable{Float32}
-    lines::Vector{EuclidLine2f}
-    straight_markers::Vector{EuclidStraightLine2f}
-    line_moves::Vector{EuclidLine2fMove}
+mutable struct EuclidPlaneSurface{N}
+    startA::Observable{Point{N, Float32}}
+    startB::Observable{Point{N, Float32}}
+    endA::Observable{Point{N, Float32}}
+    endB::Observable{Point{N, Float32}}
+    lines::Vector{EuclidLine{N}}
+    straight_markers::Vector{EuclidStraightLine{N}}
+    line_moves::Vector{EuclidLineMove{N}}
 end
+EuclidPlaneSurface2f = EuclidPlaneSurface{2}
 
 
 
@@ -41,11 +43,13 @@ function highlight_plane(
         line_color=:blue, marker_color=:red)
 
     width_end = @lift($start + [$width, 0])
+    start_B = @lift($start + [0, $height])
     wvec = @lift($width_end - $start)
     wvec_n = @lift($wvec / line_count)
+    end_b = @lift($start + [$width, $height])
     lines = [
         line(@lift(Point2f($start + $wvec_n * (i - 1))),
-             @lift(Point2f($start + [0, $height] + $wvec_n * (i - 1))),
+             @lift(Point2f($start_B + $wvec_n * (i - 1))),
              width=line_width, color=line_color)
         for i in 1:line_count]
     straight_markers = [
@@ -55,7 +59,7 @@ function highlight_plane(
         move(l, @lift(Point2f($wvec_n * i + $start)))
         for (i,l) in enumerate(lines)]
 
-    EuclidPlaneSurface2f(start, width, height, lines, straight_markers, line_moves)
+    EuclidPlaneSurface2f(start, start_B, width_end, end_b, lines, straight_markers, line_moves)
 end
 function highlight_plane(
         start::Observable{Point2f}, width::Float32, height::Float32,
@@ -134,6 +138,212 @@ function highlight_plane(
         line_count, marker_count, line_width=line_width, marker_width=marker_width,
         line_color=line_color, marker_color=marker_color)
 end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Observable{Point3f},
+        endA::Observable{Point3f}, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    wvec = @lift($endA - $startA)
+    wbvec = @lift($endB - $startB)
+    wvec_n = @lift($wvec / line_count)
+    wbvec_n = @lift($wbvec / line_count)
+    lines = [
+        line(@lift($startA + $wvec_n * (i - 1)),
+             @lift($startB + $wbvec_n * (i - 1)),
+             width=line_width, color=line_color)
+        for i in 1:line_count]
+    straight_markers = [
+        highlight_straight(l, marker_count, width=marker_width, color=marker_color)
+        for (i,l) in enumerate(lines)]
+    line_moves = [
+        move(l, @lift($wvec_n * i + $start))
+        for (i,l) in enumerate(lines)]
+
+    EuclidPlaneSurface3f(startA, startB, endA, endB, lines, straight_markers, line_moves)
+end
+function highlight_plane(
+        startA::Point3f, startB::Point3f,
+        endA::Point3f, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  Observable(startB), Observable(endA), Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Point3f,
+        endA::Point3f, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  Observable(startB), Observable(endA), Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Observable{Point3f},
+        endA::Point3f, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  startB, Observable(endA), Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Observable{Point3f},
+        endA::Observable{Point3f}, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  startB, endA, Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Observable{Point3f},
+        endA::Point3f, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  startB, Observable(endA), endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Point3f,
+        endA::Observable{Point3f}, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  Observable(startB), endA, Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Point3f,
+        endA::Observable{Point3f}, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  Observable(startB), endA, endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Observable{Point3f}, startB::Point3f,
+        endA::Point3f, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(startA,  Observable(startB), Observable(endA), endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Observable{Point3f},
+        endA::Point3f, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  startB, Observable(endA), Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Observable{Point3f},
+        endA::Observable{Point3f}, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  startB, endA, Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Observable{Point3f},
+        endA::Observable{Point3f}, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  startB, endA, endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Observable{Point3f},
+        endA::Point3f, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  startB, Observable(endA), endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Point3f,
+        endA::Observable{Point3f}, endB::Point3f,
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  Observable(startB), endA, Observable(endB),
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Point3f,
+        endA::Observable{Point3f}, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  Observable(startB), endA, endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
+function highlight_plane(
+        startA::Point3f, startB::Point3f,
+        endA::Point3f, endB::Observable{Point3f},
+        line_count::Integer, marker_count::Integer;
+        line_width::Union{Float32, Observable{Float32}}=1.5f0,
+        marker_width::Union{Float32, Observable{Float32}}=0.01f0,
+        line_color=:blue, marker_color=:red)
+
+    highlight_plane(Observable(startA),  Observable(startB), Observable(endA), endB,
+        line_count, marker_count, line_width=line_width, marker_width=marker_width,
+        line_color=line_color, marker_color=marker_color)
+end
 
 """
     show_complete(plane)
@@ -141,9 +351,9 @@ end
 Complete a previously defined highlight operation for a plane surface in a Euclid diagram. It will have the markers non-moving.
 
 # Arguments
-- `plane::EuclidPlaneSurface2f`: The description of the highlight to show
+- `plane::EuclidPlaneSurface`: The description of the highlight to show
 """
-function show_complete(plane::EuclidPlaneSurface2f)
+function show_complete(plane::EuclidPlaneSurface)
     for line in plane.lines
         show_complete(line)
     end
@@ -161,9 +371,9 @@ end
 Hide highlights of a plane surface in a Euclid diagram
 
 # Arguments
-- `plane::EuclidPlaneSurface2f`: The description of the highlight to completely hide markers for
+- `plane::EuclidPlaneSurface`: The description of the highlight to completely hide markers for
 """
-function hide(plane::EuclidPlaneSurface2f)
+function hide(plane::EuclidPlaneSurface)
     for line in plane.lines
         hide(line)
     end
@@ -181,13 +391,13 @@ end
 Animate highlighting a plane surface in a Euclid diagram
 
 # Arguments
-- `plane::EuclidPlaneSurface2f`: The plane surface to animate in the diagram
+- `plane::EuclidPlaneSurface`: The plane surface to animate in the diagram
 - `hide_until::AbstractFloat`: The time point to begin highlighting the line at
 - `end_at::AbstractFloat`: The time point to finish going back to no more highlighting
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    plane::EuclidPlaneSurface2f, hide_until::AbstractFloat, end_at::AbstractFloat, t::AbstractFloat)
+    plane::EuclidPlaneSurface, hide_until::AbstractFloat, end_at::AbstractFloat, t::AbstractFloat)
 
     for line in plane.lines
         animate(line, hide_until, hide_until+0.1f0, t, fade_start=end_at-0.1f0, fade_end=end_at)
