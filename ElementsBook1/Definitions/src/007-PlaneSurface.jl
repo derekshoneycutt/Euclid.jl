@@ -1,5 +1,5 @@
 
-export EuclidPlaneSurface2f, highlight_plane, show_complete, hide, animate
+export EuclidPlaneSurface, EuclidPlaneSurface2f, EuclidPlaneSurface3f, highlight_plane, show_complete, hide, animate
 
 """
     EuclidPlaneSurface
@@ -16,6 +16,7 @@ mutable struct EuclidPlaneSurface{N}
     line_moves::Vector{EuclidLineMove{N}}
 end
 EuclidPlaneSurface2f = EuclidPlaneSurface{2}
+EuclidPlaneSurface3f = EuclidPlaneSurface{3}
 
 
 
