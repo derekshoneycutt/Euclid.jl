@@ -14,11 +14,6 @@ end
 EuclidSurface2fHighlightExtremities = EuclidSurfaceHighlightExtremities{2}
 EuclidSurface3fHighlightExtremities = EuclidSurfaceHighlightExtremities{3}
 
-struct line_points
-    x::Point3f0
-    y::Point3f0
-end
-
 """
     highlight_extremities(surface[, point_width=0.02f0, point_color=:blue, text_color=:blue, text_opacity=1f0, labelA="A", labelB="B"])
 
@@ -26,12 +21,9 @@ Set up highlighting the extremities of a single surface in a Euclid diagram
 
 # Arguments
 - `surface::EuclidSurface`: The surface to highlight in the diagram
-- `point_width::Union{Float32, Observable{Float32}}`: The width of the circle to draw the highlight
-- `point_color`: The color to use in highlighting the surface
-- `text_color`: Color of the text to write the labels of the points with
-- `text_opacity::Union{Float32, Observable{Float32}}`: The opacity to show the labels of the extremities with
-- `labelA`: The label of the first extremity (in order they were created)
-- `labelB`: The label of the second extremity
+- `outline::Vector{Point3f}`: 3D surfaces need to supply an outline from which the extremities will be pulled
+- `width::Union{Float32, Observable{Float32}}`: The width of the highlight to draw
+- `color`: The color to use in highlighting the surface extremities
 """
 function highlight_extremities(surface::EuclidSurface2f;
                                width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
@@ -47,36 +39,24 @@ function highlight_extremities(surface::EuclidSurface2f;
 
     EuclidSurface2fHighlightExtremities(surface, extremities, highlights)
 end
-function highlight_extremities(surface::EuclidSurface3f;
+function highlight_extremities(surface::EuclidSurface3f, outline::Observable{Vector{Point3f}};
                                width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
 
     observable_width = width isa Observable ? width : Observable(width)
     true_line_width = @lift($observable_width * 0.001f0)
 
-    # 3D drawings are in triangles, so there will probably be overlapping non-extremity lines that need to be purged out
-    possibilities = @lift([line_points(x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1])
-                            for (i,x) in enumerate($(surface.from_points))])
-    arematchinglines(x,y) = (x.x == y.x && x.y == y.y) || (x.x== y.y && x.y == y.x)
-    limit_points =
-        @lift(reduce($(possibilities)) do x,y
-            if x isa Array
-                first_match = findfirst(el -> arematchinglines(el,y), x)
-                if first_match === nothing
-                    vcat(x, [y])
-                else
-                    filter(el -> !arematchinglines(el,y), x)
-                end
-            else
-                [x,y]
-            end
-        end)
-
-    extremities = @lift([line(lp.x, lp.y, width=true_line_width, color=color)
-                            for lp in $(limit_points)])
+    extremities = @lift([line(x, ($(outline))[i < length($(outline)) ? i + 1 : 1],
+                              width=true_line_width, color=color)
+                            for (i,x) in enumerate($(outline))])
     highlights = @lift([highlight(x, width=observable_width, color=color)
                             for x in $extremities])
 
     EuclidSurface3fHighlightExtremities(surface, extremities, highlights)
+end
+function highlight_extremities(surface::EuclidSurface3f, outline::Vector{Point3f};
+                               width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
+
+    highlight_extremities(surface, Observable(outline), width=width, color=color)
 end
 
 """
