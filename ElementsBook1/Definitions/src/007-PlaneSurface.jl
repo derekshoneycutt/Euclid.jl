@@ -159,7 +159,7 @@ function highlight_plane(
         highlight_straight(l, marker_count, width=marker_width, color=marker_color)
         for (i,l) in enumerate(lines)]
     line_moves = [
-        move(l, @lift($wvec_n * i + $start))
+        move(l, @lift($wvec_n * i + $startA))
         for (i,l) in enumerate(lines)]
 
     EuclidPlaneSurface3f(startA, startB, endA, endB, lines, straight_markers, line_moves)
