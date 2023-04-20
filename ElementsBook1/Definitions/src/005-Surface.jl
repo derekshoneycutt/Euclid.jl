@@ -35,8 +35,7 @@ function plane_surface(points::Observable{Vector{Point2f}};
                               opacity :
                               Observable(opacity)
 
-    use_color = get_color(color)
-    plots = poly!(points, color=@lift(RGBA(use_color.r, use_color.g, use_color.b, $observable_opacity)),
+    plots = poly!(points, color=@lift(opacify(color, $observable_opacity)),
                   strokewidth=0f0)
 
     EuclidSurface2f(points, plots,
@@ -56,7 +55,7 @@ function plane_surface(points::Observable{Vector{Point3f}};
                               opacity :
                               Observable(opacity)
 
-    plots = mesh!(points, color=@lift(opacify(color, $observable_opacity)),
+    plots = poly!(points, color=@lift(opacify(color, $observable_opacity)),
                   strokewidth=0f0)
 
     EuclidSurface3f(points, plots,
