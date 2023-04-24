@@ -39,19 +39,24 @@ function highlight_extremities(surface::EuclidSurface2f;
 
     EuclidSurface2fHighlightExtremities(surface, extremities, highlights)
 end
-function highlight_extremities(surface::EuclidSurface3f;
+function highlight_extremities(surface::EuclidSurface3f, outline::Observable{Vector{Point3f0}};
                                width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
 
     observable_width = width isa Observable ? width : Observable(width)
     true_line_width = @lift($observable_width * 0.001f0)
 
-    extremities = @lift([line(x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1],
+    extremities = @lift([line(x, ($(outline))[i < length($(outline)) ? i + 1 : 1],
                               width=true_line_width, color=color)
-                            for (i,x) in enumerate($(surface.from_points))])
+                            for (i,x) in enumerate($(outline))])
     highlights = @lift([highlight(x, width=observable_width, color=color)
                             for x in $extremities])
 
     EuclidSurface3fHighlightExtremities(surface, extremities, highlights)
+end
+function highlight_extremities(surface::EuclidSurface3f, outline::Vector{Point3f0};
+                               width::Union{Float32, Observable{Float32}}=2f0, color=:blue)
+
+    highlight_extremities(surface, Observable(outline), width=width, color=color)
 end
 
 """
