@@ -1,17 +1,18 @@
 
-export EuclidStraightLine2f, highlight_rectilineal, show_complete, hide, animate
+export EuclidRectilinealAngle, EuclidRectilinealAngle2f, EuclidStraightLine3f, highlight_rectilineal, show_complete, hide, animate
 
 """
-    EuclidRectilinealAngle2f
+    EuclidRectilinealAngle
 
 Describes highlighting a rectilineal angle in a Euclid diagram
 """
-mutable struct EuclidRectilinealAngle2f
-    baseOn::EuclidAngle2f
-    highlightA::EuclidStraightLine2f
-    highlightB::EuclidStraightLine2f
+mutable struct EuclidRectilinealAngle{N}
+    baseOn::EuclidAngle{N}
+    highlightA::EuclidStraightLine{N}
+    highlightB::EuclidStraightLine{N}
 end
-
+EuclidRectilinealAngle2f = EuclidRectilinealAngle{2}
+EuclidRectilinealAngle3f = EuclidRectilinealAngle{3}
 
 
 """
@@ -20,19 +21,19 @@ end
 Set up highlighting a rectilineal angle in a Euclid diagram
 
 # Arguments
-- `angle::EuclidAngle2f`: The angle to highlight in the diagram
+- `angle::EuclidAngle`: The angle to highlight in the diagram
 - `markers::Integer`: The number of markers to use in highlighting each straight line
 - `width::Union{Float32, Observable{Float32}}`: The width of the circles to draw the highlight
 - `color`: The color to use in highlighting the angle
 """
-function highlight_rectilineal( angle::EuclidAngle2f, markers::Integer;
+function highlight_rectilineal( angle::EuclidAngle, markers::Integer;
                                 width::Union{Float32, Observable{Float32}}=0.01f0,
                                 color=:red)
 
     highlightA = highlight_straight(line(angle.point, angle.extremityA), markers, width=width, color=color)
     highlightB = highlight_straight(line(angle.point, angle.extremityB), markers, width=width, color=color)
 
-    EuclidRectilinealAngle2f(angle, highlightA, highlightB)
+    EuclidRectilinealAngle(angle, highlightA, highlightB)
 end
 
 
@@ -42,9 +43,9 @@ end
 Complete a previously defined highlight operation for a rectilineal angle in a Euclid diagram. It will have the markers non-moving.
 
 # Arguments
-- `angle::EuclidRectilinealAngle2f`: The description of the highlight to show
+- `angle::EuclidRectilinealAngle`: The description of the highlight to show
 """
-function show_complete(angle::EuclidRectilinealAngle2f)
+function show_complete(angle::EuclidRectilinealAngle)
     show_complete(angle.highlightA)
     show_complete(angle.highlightB)
 end
@@ -55,9 +56,9 @@ end
 Hide highlights of a rectilineal angle in a Euclid diagram
 
 # Arguments
-- `angle::EuclidRectilinealAngle2f`: The description of the highlight to completely hide markers for
+- `angle::EuclidRectilinealAngle`: The description of the highlight to completely hide markers for
 """
-function hide(angle::EuclidRectilinealAngle2f)
+function hide(angle::EuclidRectilinealAngle)
     hide(angle.highlightA)
     hide(angle.highlightB)
 end
@@ -68,12 +69,12 @@ end
 Animate highlighting a rectilineal angle in a Euclid diagram
 
 # Arguments
-- `angle::EuclidRectilinealAngle2f`: The angle to animate in the diagram
+- `angle::EuclidRectilinealAngle`: The angle to animate in the diagram
 - `hide_until::AbstractFloat`: The time point to begin highlighting the angle at
 - `end_at::AbstractFloat`: The time point to finish going back to no more highlighting
 - `t::AbstractFloat`: The current timeframe of the animation
 """
-function animate(angle::EuclidRectilinealAngle2f,
+function animate(angle::EuclidRectilinealAngle,
                  hide_until::AbstractFloat, end_at::AbstractFloat,
                  t::AbstractFloat)
 

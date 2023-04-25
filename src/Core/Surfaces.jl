@@ -25,6 +25,7 @@ Triangulate an arch based on a vector of points that are pre-set around a given 
 - `center:Point` : The center point that triangles will be drawn to around the arch
 """
 function triangulate_arch(points::Vector{Point3f}, center::Point3f)
-    vcat(([[center, p, p[i + 1]]
-                for (i,p) in enumerate(points[1:end-1])])...)
+    [Point3f(p)
+     for p in vcat(([ [center, p, p[i + 1]]
+                      for (i,p) in enumerate(points[1:end-1])])...)]
 end
