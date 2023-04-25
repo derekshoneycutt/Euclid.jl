@@ -15,13 +15,13 @@ struct EuclidAngleObtuseMarker
 end
 
 
-function get_vecθs(center::Point2f, pointA::Point2f, pointB::Point2f)
+function get_vecθs(center::Point, pointA::Point, pointB::Point)
     vector_angle_A = fix_angle(vector_angle(center, pointA))
     vector_angle_B = fix_angle(vector_angle(center, pointB))
     sort([vector_angle_A, vector_angle_B])
 end
 
-function get_start_end_θ(vec_θs, larger::Bool)
+function get_start_end_θ(vec_θs::Vector{Float32}, larger::Bool)
     θ_use = (vec_θs[2] - vec_θs[1] <= π) ⊻ larger ? 1 : 2
 
     θ_start = vec_θs[θ_use]
@@ -29,8 +29,20 @@ function get_start_end_θ(vec_θs, larger::Bool)
 
     (θ_start, θ_end)
 end
+function get_start_end_θ(vec_θs::Vector{Tuple{Float32, Float32}}, larger::Bool)
+    ordered_θs = get_start_end_θ([vec_θs[1][1], vec_θs[2][1]], larger)
 
-function get_drawing_angle(center::Point2f, pointA::Point2f, pointB::Point2f,
+    Φ_smaller = ordered_θs[1] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
+    Φ_larger = ordered_θs[2] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
+    if Φ_smaller > Φ_larger
+        Φ_larger = Φ_larger + 2π
+    end
+
+    ((ordered_θs[1], Φ_smaller),
+     (ordered_θs[2], Φ_larger))
+end
+
+function get_drawing_angle(center::Point, pointA::Point, pointB::Point,
                            angle_rad::Float32)
 
     v_A = pointA - center
@@ -44,12 +56,23 @@ function get_drawing_angle(center::Point2f, pointA::Point2f, pointB::Point2f,
     (θ, draw_at)
 end
 
-function get_angle_range(θ, larger::Bool, θ_start, θ_end, draw_at, center)
+function get_angle_range(θ, larger::Bool, θ_start::Float32, θ_end::Float32, draw_at, center::Point2)
     isapprox(θ, π/2, atol=0.0001) && !larger ?
         [Point2f0([cos(θ_start); sin(θ_start)]*√(((draw_at)^2)/2) + center),
             Point2f0([cos(θ_start+π/4); sin(θ_start+π/4)]*draw_at + center),
             Point2f0([cos(θ_end); sin(θ_end)]*√(((draw_at)^2)/2) + center)] :
         [Point2f0([cos(t); sin(t)]*draw_at + center) for t in θ_start:(π/180):θ_end]
+end
+function get_angle_range(θ, larger::Bool, θ_start::Tuple{Float32, Float32}, θ_end::Tuple{Float32, Float32}, draw_at, center::Point3)
+    isapprox(θ, π/2, atol=0.0001) && !larger ?
+        [Point3f0([sin(θ_start[2])*cos(θ_start[1]); sin(θ_start[2])*sin(θ_start[1]); cos(θ_start[2])]*√(((draw_at)^2)/2) + center),
+            Point3f0([sin(θ_start[2]+((θ_end[2]-θ_start[2])/2))*cos(θ_start[1]+((θ_end[1]-θ_start[1])/2));
+                      sin(θ_start[2]+((θ_end[2]-θ_start[2])/2))*sin(θ_start[1]+((θ_end[1]-θ_start[1])/2));
+                      cos(θ_start[2]+((θ_end[2]-θ_start[2])/2))]*draw_at + center),
+            Point3f0([sin(θ_end[2])*cos(θ_end[1]); sin(θ_end[2])*sin(θ_end[1]); cos(θ_end[2])]*√(((draw_at)^2)/2) + center)] :
+        [Point3f0([sin(θ_start[2]+((θ_end[2]-θ_start[2])*t))*cos(θ_start[1]+((θ_end[1]-θ_start[1])*t));
+                   sin(θ_start[2]+((θ_end[2]-θ_start[2])*t))*sin(θ_start[1]+((θ_end[1]-θ_start[1])*t));
+                   cos(θ_start[2]+((θ_end[2]-θ_start[2])*t))]*draw_at + center) for t in 0f0:(180f0*θ/360f0π):1f0]
 end
 
 
@@ -59,14 +82,14 @@ end
 Gets the angle measurements used to draw an angle in Euclid diagrams
 
 # Arguments
-- `center::Observable{Point2f}` : The center point of the angle
-- `pointA::Observable{Point2f}` : The point of the first extended extremity of the angle
-- `pointB::Observable{Point2f}` : The point of the second extended extremity of the angle
+- `center::Observable{Point}` : The center point of the angle
+- `pointA::Observable{Point}` : The point of the first extended extremity of the angle
+- `pointB::Observable{Point}` : The point of the second extended extremity of the angle
 - `larger::Bool` : Whether to get measures for the larger angle, or default to the smaller
 - `angle_rad::Union{Float32, Observable{Float32}}` : The percent of the angle radiation to draw, as percent of smallest extended line
 """
 function get_angle_measure_observables(
-        center::Observable{Point2f}, pointA::Observable{Point2f}, pointB::Observable{Point2f},
+        center::Observable{Point}, pointA::Observable{Point}, pointB::Observable{Point},
         larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
 
     vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
@@ -87,9 +110,11 @@ end
 
 Get obtuse angle marker points for drawing a line indicating obtuse angle, based on observable euclid angle data
 
+Note: We're not gonna do this for 3D because that's just overkill.
+
 # Arguments
 - `angle_data::EuclidAngleObservables` : Observable data about the angle being evaluated
-- `center::Observable{Point2f}` : The center point of the angle - must be an observable
+- `center::Observable{Point}` : The center point of the angle - must be an observable
 - `larger::Bool` : whether evaluating the larger or smaller angle between the two lines
 """
 function get_obtuse_angle_marker(angle_data::EuclidAngleObservables, center::Observable{Point2f}, larger::Bool)
@@ -120,28 +145,53 @@ Fix an angle so that it is always between 0 and 2π
 # Arguments
 - `θ`: The angle to fix
 """
-fix_angle(θ) = begin
+fix_angle(θ::AbstractFloat) = begin
     ret = θ % 2f0π
     while ret < 0f0
         ret = ret + 2f0π
     end
     ret
 end
+fix_angle(angles::Tuple{AbstractFloat, AbstractFloat}) = begin
+    θ = angles[1]
+    Φ = angles[2]
+    θ = θ % 2f0π
+    Φ = Φ % 2f0π
+    while θ < 0f0
+        θ = θ + 2f0π
+    end
+    while Φ < 0f0
+        Φ = Φ + 2f0π
+    end
+    (θ, Φ)
+end
 
 """
     vector_angle(A, B)
 
-Get the angle of a vector at origin A, going to B
+Get the angle(s) of a vector at origin A, going to B
+
+Returns 1 angle for 2D, 2 angles for 3D
 
 # Arguments
-- `A::Point2`: The origin of the vector
-- `B::Point2`: A point along the direction the vector is heading
+- `A::Point`: The origin of the vector
+- `B::Point`: A point along the direction the vector is heading
 """
 function vector_angle(A::Point2, B::Point2)
     v = B-A
     r = norm(v)
     θ = acos(v[1]/r)
     (v[2] >= 0 ? 1 : -1) * (θ == 0f0 && v[1] < 0 ? π : θ)
+end
+function vector_angle(A::Point3, B::Point3)
+    v = B-A
+    r = norm(v)
+    θ = acos(v[1] / r)
+    θ = (v[2] >= 0 ? 1 : -1) * (θ == 0f0 && v[1] < 0 ? π : θ)
+    Φ = acos(v[1] / (r * sin(θ)))
+    Φ = (v[3] >= 0 ? 1 : -1) * (Φ == 0f0 && v[2] < 0 ? π : Φ)
+
+    (θ, Φ)
 end
 
 
@@ -151,10 +201,10 @@ end
 Get the angle between 2 vectors. Assumed to have same origin.
 
 # Arguments
-- `A::Point2`: The first vector
-- `B::Point2`: The second vector
+- `A::Point`: The first vector
+- `B::Point`: The second vector
 """
-function angle_between(A::Point2, B::Point2)
+function angle_between(A::Point, B::Point)
     dp = dot(A, B)
     normprod = norm(A)*norm(B)
     θ = acos(dp/normprod)
