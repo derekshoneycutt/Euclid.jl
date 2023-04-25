@@ -117,31 +117,31 @@ function plane_angle(center::Point2f, pointA::Point2f, pointB::Point2f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end
-function plane_angle(center::Observable{Point3f}, pointA::Point2f, pointB::Point2f;
+function plane_angle(center::Observable{Point3f}, pointA::Point3f, pointB::Point3f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(center, Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end
-function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, pointB::Point2f;
+function plane_angle(center::Observable{Point3f}, pointA::Observable{Point3f}, pointB::Point3f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(center, pointA, Observable(pointB), width=width, color=color, larger=larger)
 end
-function plane_angle(center::Observable{Point2f}, pointA::Point2f, pointB::Observable{Point2f};
+function plane_angle(center::Observable{Point3f}, pointA::Point3f, pointB::Observable{Point3f};
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(center, Observable(pointA), pointB, width=width, color=color, larger=larger)
 end
-function plane_angle(center::Point2f, pointA::Observable{Point2f}, pointB::Point2f;
+function plane_angle(center::Point3f, pointA::Observable{Point3f}, pointB::Point3f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), pointA, Observable(pointB), width=width, color=color, larger=larger)
 end
-function plane_angle(center::Point2f, pointA::Observable{Point2f}, pointB::Observable{Point2f};
+function plane_angle(center::Point3f, pointA::Observable{Point3f}, pointB::Observable{Point3f};
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), pointA, pointB, width=width, color=color, larger=larger)
 end
-function plane_angle(center::Point2f, pointA::Point2f, pointB::Observable{Point2f};
+function plane_angle(center::Point3f, pointA::Point3f, pointB::Observable{Point3f};
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), Observable(pointA), pointB, width=width, color=color, larger=larger)
 end
-function plane_angle(center::Point2f, pointA::Point2f, pointB::Point2f;
+function plane_angle(center::Point3f, pointA::Point3f, pointB::Point3f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end

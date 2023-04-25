@@ -89,7 +89,23 @@ Gets the angle measurements used to draw an angle in Euclid diagrams
 - `angle_rad::Union{Float32, Observable{Float32}}` : The percent of the angle radiation to draw, as percent of smallest extended line
 """
 function get_angle_measure_observables(
-        center::Observable{Point}, pointA::Observable{Point}, pointB::Observable{Point},
+        center::Observable{Point2f}, pointA::Observable{Point2f}, pointB::Observable{Point2f},
+        larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
+
+    vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
+
+    θ_start_end = @lift(get_start_end_θ($vec_θs, larger))
+
+    θ_draw_at = angle_rad isa Observable{Float32} ?
+                    @lift(get_drawing_angle($center, $pointA, $pointB, $angle_rad)) :
+                    @lift(get_drawing_angle($center, $pointA, $pointB, angle_rad))
+
+    angle_range = @lift(get_angle_range(($θ_draw_at)[1], larger, ($θ_start_end)[1], ($θ_start_end)[2], ($θ_draw_at)[2], $center))
+
+    EuclidAngleObservables(@lift(($θ_start_end)[1]), @lift(($θ_start_end)[2]), @lift(($θ_draw_at)[2]), @lift(($θ_draw_at)[1]), angle_range)
+end
+function get_angle_measure_observables(
+        center::Observable{Point3f}, pointA::Observable{Point3f}, pointB::Observable{Point3f},
         larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
 
     vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
