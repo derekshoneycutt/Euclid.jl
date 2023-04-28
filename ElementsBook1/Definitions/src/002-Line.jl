@@ -28,7 +28,7 @@ Sets up a new line in a Euclid Diagram for drawing
 - `color`: The color to draw the line with
 """
 function line(extremityA::Observable{Point2f}, extremityB::Observable{Point2f};
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     observable_width = Observable(0f0)
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
@@ -40,46 +40,46 @@ function line(extremityA::Observable{Point2f}, extremityB::Observable{Point2f};
         observable_width, observable_show_width)
 end
 function line(extremityA::Observable{Point3f}, extremityB::Observable{Point3f};
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=0.01f0, color=:blue)
 
     observable_width = Observable(0f0)
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
 
-    plots = lines!(@lift([$extremityA, $extremityB]),
-                   color=color, linewidth=(observable_width), linestyle=linestyle)
+    plots = mesh!(@lift(Cylinder($extremityA, $extremityB, $observable_width)),
+                   color=color)
 
     EuclidLine3f(extremityA, extremityB, plots,
                  observable_width, observable_show_width)
 end
 function line(extremityA::Point2f, extremityB::Point2f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point3f, extremityB::Point3f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Observable{Point2f}, extremityB::Point2f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
 
     line(extremityA, Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Observable{Point3f}, extremityB::Point3f;
-    width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=0.01f0, color=:blue)
 
-    line(extremityA, Observable(extremityB), width=width, color=color, linestyle=linestyle)
+    line(extremityA, Observable(extremityB), width=width, color=color)
 end
 function line(extremityA::Point2f, extremityB::Observable{Point2f};
-    width::AbstractFloat=1f0, color=:blue, linestyle=:solid)
+              width::AbstractFloat=0.01f0, color=:blue)
 
-    line(Observable(extremityA), extremityB, width=width, color=color, linestyle=linestyle)
+    line(Observable(extremityA), extremityB, width=width, color=color)
 end
 function line(extremityA::Point3f, extremityB::Observable{Point3f};
-    width::AbstractFloat=1f0, color=:blue, linestyle=:solid)
+              width::AbstractFloat=0.01f0, color=:blue)
 
-    line(Observable(extremityA), extremityB, width=width, color=color, linestyle=linestyle)
+    line(Observable(extremityA), extremityB, width=width, color=color)
 end
 
 """
@@ -119,9 +119,8 @@ Animate drawing and perhaps then hiding line drawn in a Euclid diagram
 - `fade_start::AbstractFloat`: When to begin fading the line away from the diagram
 - `fade_end::AbstractFloat`: When to end fading the line awawy from the diagram -- it will be hidden entirely
 """
-function animate(
-    line::EuclidLine, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
-    fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
+function animate(line::EuclidLine, hide_until::AbstractFloat, max_at::AbstractFloat, t::AbstractFloat;
+                 fade_start::AbstractFloat=0f0, fade_end::AbstractFloat=0f0)
 
     perform(t, hide_until, max_at, fade_start, fade_end,
         () -> line.current_width[] = 0f0,

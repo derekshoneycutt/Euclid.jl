@@ -23,13 +23,12 @@ EuclidPoint3f = EuclidPoint{3}
 Sets up a new point in a Euclid Diagram for drawing
 
 # Arguments
-- `at_spot::Point2f`: The location of the point to draw
+- `at_spot::Point`: The location of the point to draw
 - `point_width::Union{Float32,Observable{Float32}}`: The width of the point to draw
 - `point_color`: The color to draw the point with
 - `text_color`: The color to draw the text of the point label with
 - `text_opacity`: The opacity of the text label to draw
 - `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
 """
 function point(at_spot::Observable{Point2f};
     point_width::Union{Float32,Observable{Float32}}=0.01f0, point_color=:blue,
@@ -46,22 +45,6 @@ function point(at_spot::Observable{Point2f};
         observable_width, observable_show_width,
         use_label)
 end
-
-
-"""
-    point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
-
-Sets up a new point in a Euclid Diagram for drawing
-
-# Arguments
-- `at_spot::Point2f`: The location of the point to draw
-- `point_width::AbstractFloat`: The width of the point to draw
-- `point_color`: The color to draw the point with
-- `text_color`: The color to draw the text of the point label with
-- `text_opacity::AbstractFloat`: The opacity of the text label to draw
-- `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
-"""
 function point(at_spot::Point2f;
     point_width::AbstractFloat=0.01f0, point_color=:blue,
     text_color=:blue, text_opacity::AbstractFloat=1f0, label="A")
@@ -71,21 +54,6 @@ function point(at_spot::Point2f;
           point_width=point_width, point_color=point_color,
           text_color=text_color, text_opacity=text_opacity, label=label)
 end
-
-"""
-    point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
-
-Sets up a new point in a Euclid Diagram for drawing
-
-# Arguments
-- `at_spot::Point3f`: The location of the point to draw
-- `point_width::Union{Float32,Observable{Float32}}`: The width of the point to draw
-- `point_color`: The color to draw the point with
-- `text_color`: The color to draw the text of the point label with
-- `text_opacity`: The opacity of the text label to draw
-- `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
-"""
 function point(at_spot::Observable{Point3f};
     point_width::Union{Float32,Observable{Float32}}=0.015f0, point_color=:blue,
     text_color=:blue, text_opacity=1f0, label="A")
@@ -101,22 +69,6 @@ function point(at_spot::Observable{Point3f};
         observable_width, observable_show_width,
         use_label)
 end
-
-
-"""
-    point(at_spot[, point_width=0.01f0, point_color=:blue, text_color=:blue, text_opacity=1f0, label="A"])
-
-Sets up a new point in a Euclid Diagram for drawing
-
-# Arguments
-- `at_spot::Point3f`: The location of the point to draw
-- `point_width::AbstractFloat`: The width of the point to draw
-- `point_color`: The color to draw the point with
-- `text_color`: The color to draw the text of the point label with
-- `text_opacity::AbstractFloat`: The opacity of the text label to draw
-- `label`: The text label to draw on the point
-- `show_label::Bool`: Whether to show the label of the point
-"""
 function point(at_spot::Point3f;
     point_width::AbstractFloat=0.015f0, point_color=:blue,
     text_color=:blue, text_opacity::AbstractFloat=1f0, label="A")
