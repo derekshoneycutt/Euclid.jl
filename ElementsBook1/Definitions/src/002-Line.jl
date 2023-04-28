@@ -57,9 +57,9 @@ function line(extremityA::Point2f, extremityB::Point2f;
     line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point3f, extremityB::Point3f;
-              width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
+              width::Union{Float32, Observable{Float32}}=1f0, color=:blue)
 
-    line(Observable(extremityA), Observable(extremityB), width=width, color=color, linestyle=linestyle)
+    line(Observable(extremityA), Observable(extremityB), width=width, color=color)
 end
 function line(extremityA::Observable{Point2f}, extremityB::Point2f;
               width::Union{Float32, Observable{Float32}}=1f0, color=:blue, linestyle=:solid)
@@ -72,9 +72,9 @@ function line(extremityA::Observable{Point3f}, extremityB::Point3f;
     line(extremityA, Observable(extremityB), width=width, color=color)
 end
 function line(extremityA::Point2f, extremityB::Observable{Point2f};
-              width::AbstractFloat=0.01f0, color=:blue)
+              width::AbstractFloat=0.01f0, color=:blue, linestyle=:solid)
 
-    line(Observable(extremityA), extremityB, width=width, color=color)
+    line(Observable(extremityA), extremityB, width=width, color=color, linestyle=linestyle)
 end
 function line(extremityA::Point3f, extremityB::Observable{Point3f};
               width::AbstractFloat=0.01f0, color=:blue)
