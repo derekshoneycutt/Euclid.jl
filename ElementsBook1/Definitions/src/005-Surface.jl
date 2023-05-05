@@ -55,9 +55,9 @@ function plane_surface(points::Observable{Vector{Point3f}};
                               opacity :
                               Observable(opacity)
 
-    xs = @lift([p[1] for p in points])
-    ys = @lift([p[2] for p in points])
-    zs = @lift([p[3] for p in points])
+    xs = @lift([p[1] for p in $points])
+    ys = @lift([p[2] for p in $points])
+    zs = @lift([p[3] for p in $points])
     plots = surface!(xs, ys, zs, colormap=@lift([opacify(color, $observable_opacity)]))
 
     EuclidSurface3f(points, plots,
