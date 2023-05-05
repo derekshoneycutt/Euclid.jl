@@ -41,9 +41,9 @@ function highlight(line::EuclidLine3f; width::Union{Float32, Observable{Float32}
     observable_highlight = Observable(0f0)
     observable_max_width = width isa Observable{Float32} ? width : Observable(width)
 
-    plots = lines!(@lift([$(line.extremityA), $(line.extremityB)]),
-                    color=opacify(color, 0.6),
-                    linewidth=observable_highlight)
+
+    plots = mesh!(@lift(Cylinder($(line.extremityA), $(line.extremityB), $observable_highlight)),
+                   color=opacify(color, 0.6))
 
     EuclidLine3fHighlight(line, plots, observable_highlight, observable_max_width)
 end
