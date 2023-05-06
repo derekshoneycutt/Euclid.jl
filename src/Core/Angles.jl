@@ -34,9 +34,9 @@ function get_start_end_θ(vec_θs::Vector{Tuple{Float32, Float32}}, larger::Bool
 
     Φ_smaller = ordered_θs[1] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
     Φ_larger = ordered_θs[2] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
-    if Φ_smaller > Φ_larger
-        Φ_larger = Φ_larger + 2π
-    end
+    #if Φ_smaller > Φ_larger
+    #    Φ_larger = Φ_larger + 2π
+    #end
 
     ((ordered_θs[1], Φ_smaller),
      (ordered_θs[2], Φ_larger))
