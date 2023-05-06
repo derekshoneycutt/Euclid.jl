@@ -44,9 +44,9 @@ function highlight_extremities(surface::EuclidSurface3f;
     observable_width = width isa Observable ? width : Observable(width)
     true_line_width = @lift($observable_width * 0.001f0)
 
-    extremities = @lift([line(x, ($(surface.points))[i < length($(surface.points)) ? i + 1 : 1],
+    extremities = @lift([line(x, ($(surface.from_points))[i < length($(surface.from_points)) ? i + 1 : 1],
                               width=true_line_width, color=color)
-                            for (i,x) in enumerate($(surface.points))])
+                            for (i,x) in enumerate($(surface.from_points))])
     highlights = @lift([highlight(x, width=observable_width, color=color)
                             for x in $extremities])
 
