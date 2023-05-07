@@ -1,18 +1,20 @@
 
-export EuclidSurface2fMove, move, reset, show_complete, hide, animate
+export EuclidSurfaceMove, EuclidSurface2fMove, EuclidSurface3fMove, move, reset, show_complete, hide, animate
 
 """
-    EuclidSurface2fMove
+    EuclidSurfaceMove
 
 Describes moving a surface in a Euclid diagram
 """
-mutable struct EuclidSurface2fMove
-    baseOn::EuclidSurface2f
-    begin_at::Observable{Point2f}
-    move_to::Observable{Point2f}
-    vectors::Observable{Vector{Point2f}}
+mutable struct EuclidSurfaceMove{N}
+    baseOn::EuclidSurface{N}
+    begin_at::Observable{Point{N, Float32}}
+    move_to::Observable{Point{N, Float32}}
+    vectors::Observable{Vector{Point{N, Float32}}}
     movingIndex::Int
 end
+EuclidSurface2fMove = EuclidSurfaceMove{2}
+EuclidSurface3fMove = EuclidSurfaceMove{3}
 
 """
     move(surface, new_spot[, begin_at, move_index=1])
@@ -32,6 +34,15 @@ function move(surface::EuclidSurface2f, new_spot::Observable{Point2f};
     v = @lift([p - $move_extremity for p in $(surface.from_points)])
     observable_begin = begin_at isa Observable{Point2f} ? Observable(begin_at[]) : Observable(begin_at)
     EuclidSurface2fMove(surface, observable_begin, new_spot, v, move_index)
+end
+function move(surface::EuclidSurface3f, new_spot::Observable{Point3f};
+              move_index::Int=1,
+              begin_at::Union{Point3f, Observable{Point3f}}=surface.from_points[][1])
+
+    move_extremity = @lift(($(surface.from_points))[move_index])
+    v = @lift([p - $move_extremity for p in $(surface.from_points)])
+    observable_begin = begin_at isa Observable{Point3f} ? Observable(begin_at[]) : Observable(begin_at)
+    EuclidSurface3fMove(surface, observable_begin, new_spot, v, move_index)
 end
 
 """
@@ -57,14 +68,14 @@ end
 Reset a movement animation for a surface in a Euclid Diagram to new positions
 
 # Arguments
-- `move::EuclidSurface2fMove`: The description of the move to reset
-- `begin_at::Union{Point2f, Observable{Point2f}}`: The point to begin movements at in the diagram
-- `move_to::Union{Point2f, Observable{Point2f}}`: The point to end movements to in the diagram
+- `move::EuclidSurfaceMove`: The description of the move to reset
+- `begin_at::Union{Point, Observable{Point}}`: The point to begin movements at in the diagram
+- `move_to::Union{Point, Observable{Point}}`: The point to end movements to in the diagram
 - `move_index::Int`: The index of the point to base movement on (defaults to 1)
 """
-function reset(move::EuclidSurface2fMove;
-    begin_at::Union{Point2f, Observable{Point2f}}=move.baseOn.from_points[][move.movingIndex],
-    move_to::Union{Point2f, Observable{Point2f}}=move.move_to,
+function reset(move::EuclidSurfaceMove;
+    begin_at::Union{Point, Observable{Point}}=move.baseOn.from_points[][move.movingIndex],
+    move_to::Union{Point, Observable{Point}}=move.move_to,
     move_index::Int=move.movingIndex)
 
     if begin_at isa Observable{Point2f}
@@ -103,9 +114,9 @@ end
 Move a surface in a Euclid diagram back to its starting position
 
 # Arguments
-- `move::EuclidSurface2fMove`: The description of the move to "undo"
+- `move::EuclidSurfaceMove`: The description of the move to "undo"
 """
-function hide(move::EuclidSurface2fMove)
+function hide(move::EuclidSurfaceMove)
     begin_at = move.begin_at[]
     vectors = move.vectors[]
     new_points = [begin_at + vector for vector in vectors]
@@ -118,13 +129,13 @@ end
 Animate moving a surface drawn in a Euclid diagram
 
 # Arguments
-- `move::EuclidSurface2fMove`: The surface to animate in the diagram
+- `move::EuclidSurfaceMove`: The surface to animate in the diagram
 - `begin_move::AbstractFloat`: The time point to begin moving the surface at
 - `end_move::AbstractFloat`: The time point to finish moving the surface at
 - `t::AbstractFloat`: The current timeframe of the animation
 """
 function animate(
-    move::EuclidSurface2fMove,
+    move::EuclidSurfaceMove,
     begin_move::AbstractFloat, end_move::AbstractFloat, t::AbstractFloat)
 
 
@@ -142,8 +153,7 @@ function animate(
 
         on_t = ((t-begin_move)/(end_move-begin_move)) * norm_v
         if on_t > 0
-            x,y = begin_at + on_t * u
-            new_points = [Point2f0(x, y) + vector for vector in vectors]
+            new_points = [(begin_at + on_t * u) + vector for vector in vectors]
             move.baseOn.from_points[] = new_points
         else
             new_points = [move_to + vector for vector in vectors]
