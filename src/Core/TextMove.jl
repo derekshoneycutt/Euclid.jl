@@ -87,12 +87,12 @@ function reset(move::EuclidText3fMove;
     begin_at::Union{Point3f, Observable{Point3f}}=move.baseOn.location,
     move_to::Union{Point3f, Observable{Point3f}}=move.move_to)
 
-    if begin_at isa Observable{Point2f}
+    if begin_at isa Observable{Point3f}
         move.begin_at = begin_at
     else
         move.begin_at[] = begin_at
     end
-    if move_to isa Observable{Point2f}
+    if move_to isa Observable{Point3f}
         move.move_to = move_to
     else
         move.move_to[] = move_to
