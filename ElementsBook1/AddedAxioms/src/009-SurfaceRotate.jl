@@ -12,6 +12,7 @@ mutable struct EuclidSurfaceRotate{N}
     anchor::Observable{Point{N, Float32}}
     vectors::Observable{Vector{Point{N, Float32}}}
     rotate_clockwise::Bool
+    axis::Symbol
 end
 EuclidSurface2fRotate = EuclidSurfaceRotate{2}
 EuclidSurface3fRotate = EuclidSurfaceRotate{3}
@@ -24,6 +25,7 @@ Set up a rotation of a line on the Euclid diagram
 # Arguments
 - `surface::EuclidSurface`: The surface to rotate in the diagram
 - `rotation::Point`: The angle to rotate the surface in the diagram to
+- `axis::Symbol` : In 3D lines, the axis of rotation (:x, :y, :z)
 - `anchor::Point`: The fixed anchor point to rotate about
 - `clockwise::Bool`: Whether to perform clockwise rotation. Otherwise does counter-clockwise.
 """
@@ -32,24 +34,27 @@ function rotate(surface::EuclidSurface2f, rotation::Observable{Float32};
 
     observable_anchor = anchor isa Observable{Point2f} ? anchor : Observable(anchor)
     vectors = Observable([Point2f0(p - anchor) for p in surface.from_points[]])
-    EuclidSurface2fRotate(surface, rotation, observable_anchor, vectors, clockwise)
+    EuclidSurface2fRotate(surface, rotation, observable_anchor, vectors, clockwise, :twod)
 end
-function rotate(surface::EuclidSurface3f, rotation::Observable{Float32};
+function rotate(surface::EuclidSurface3f, rotation::Observable{Float32}, axis::Symbol;
                 anchor::Union{Point3f, Observable{Point3f}}=surface.from_points[][1], clockwise::Bool=false)
 
+    if axis != :x && axis != :y && axis != :z
+        throw("Axis of rotation for 3D lines must be specified as :x, :y, or :z")
+    end
     observable_anchor = anchor isa Observable{Point3f} ? anchor : Observable(anchor)
     vectors = Observable([Point3f0(p - anchor) for p in surface.from_points[]])
-    EuclidSurface3fRotate(surface, rotation, observable_anchor, vectors, clockwise)
+    EuclidSurface3fRotate(surface, rotation, observable_anchor, vectors, clockwise, axis)
 end
 function rotate(surface::EuclidSurface2f, rotation::Float32;
                 anchor::Union{Point2f, Observable{Point2f}}=surface.from_points[][1], clockwise::Bool=false)
 
     rotate(surface, Observable(rotation), anchor=anchor, clockwise=clockwise)
 end
-function rotate(surface::EuclidSurface3f, rotation::Float32;
+function rotate(surface::EuclidSurface3f, rotation::Float32, axis::Symbol;
                 anchor::Union{Point3f, Observable{Point3f}}=surface.from_points[][1], clockwise::Bool=false)
 
-    rotate(surface, Observable(rotation), anchor=anchor, clockwise=clockwise)
+    rotate(surface, Observable(rotation), axis, anchor=anchor, clockwise=clockwise)
 end
 
 """
@@ -73,8 +78,9 @@ function reset(rotate::EuclidSurface2fRotate, rotation::Union{Point2f, Observabl
     rotate.anchor = observable_anchor
     rotate.vectors = Observable([Point2f0(p - anchor) for p in surface.from_points[]])
     rotate.rotate_clockwise = clockwise
+    rotate
 end
-function reset(rotate::EuclidSurface3fRotate, rotation::Union{Point3f, Observable{Point3f}};
+function reset(rotate::EuclidSurface3fRotate, rotation::Union{Point3f, Observable{Point3f}}, axis::Symbol;
                 anchor::Union{Point3f, Observable{Point3f}}=rotate.baseOn.from_points[][1],
                 clockwise::Bool=rotate.rotate_clockwise)
 
@@ -84,6 +90,8 @@ function reset(rotate::EuclidSurface3fRotate, rotation::Union{Point3f, Observabl
     rotate.anchor = observable_anchor
     rotate.vectors = Observable([Point3f0(p - anchor) for p in surface.from_points[]])
     rotate.rotate_clockwise = clockwise
+    rotate.axis = axis
+    rotate
 end
 
 """
@@ -99,7 +107,18 @@ function show_complete(rotate::EuclidSurfaceRotate)
     θ = rotate.rotation[]
     anchor = rotate.anchor[]
     vectors = rotate.vectors[]
-    new_points = [anchor +  [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)] * v
+
+    rotation_matrix =
+        if rotate.axis == :twod
+            [cos(θ) -sin(θ)*clockwise_mod; sin(θ)*clockwise_mod cos(θ)]
+        elseif rotate.axis == :x
+            [1 0 0; 0 cos(θ) -sin(θ)*clockwise_mod; 0 sin(θ)*clockwise_mod cos(θ)]
+        elseif rotate.axis == :y
+            [cos(θ) 0 sin(θ)*clockwise_mod; 0 1 0; -sin(θ)*clockwise_mod 0 cos(θ)]
+        elseif rotate.axis == :z
+            [cos(θ) -sin(θ)*clockwise_mod 0; sin(θ)*clockwise_mod cos(θ) 0; 0 0 1]
+        end
+    new_points = [anchor + rotation_matrix * v
                   for v in vectors]
     rotate.baseOn.from_points[] = new_points
 end
@@ -145,7 +164,17 @@ function animate(
          () -> nothing) do
         on_t = ((t - begin_rotate)/(end_rotate - begin_rotate)) * rotate.rotation[]
         if on_t > 0
-            new_points = [anchor + [cos(on_t) -sin(on_t)*clockwise_mod; sin(on_t)*clockwise_mod cos(on_t)] * v
+            rotation_matrix =
+                if rotate.axis == :twod
+                    [cos(on_t) -sin(on_t)*clockwise_mod; sin(on_t)*clockwise_mod cos(on_t)]
+                elseif rotate.axis == :x
+                    [1 0 0; 0 cos(on_t) -sin(on_t)*clockwise_mod; 0 sin(on_t)*clockwise_mod cos(on_t)]
+                elseif rotate.axis == :y
+                    [cos(on_t) 0 sin(on_t)*clockwise_mod; 0 1 0; -sin(on_t)*clockwise_mod 0 cos(on_t)]
+                elseif rotate.axis == :z
+                    [cos(on_t) -sin(on_t)*clockwise_mod 0; sin(on_t)*clockwise_mod cos(on_t) 0; 0 0 1]
+                end
+            new_points = [anchor + rotation_matrix * v
                           for v in vectors]
             rotate.baseOn.from_points[] = new_points
         else
