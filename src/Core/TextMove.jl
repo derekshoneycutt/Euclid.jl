@@ -64,11 +64,11 @@ Reset a movement animation for text in a Euclid Diagram to new positions
 Does not move the text
 
 # Arguments
-- `move::EuclidText2fMove`: The description of the move to reset
+- `move::EuclidTextMove`: The description of the move to reset
 - `begin_at::Union{Point2f, Observable{Point2f}}`: The point to begin movements at in the diagram
 - `move_to::Union{Point2f, Observable{Point2f}}`: The point to end movements to in the diagram
 """
-function reset(move::EuclidTextMove;
+function reset(move::EuclidText2fMove;
     begin_at::Union{Point2f, Observable{Point2f}}=move.baseOn.location,
     move_to::Union{Point2f, Observable{Point2f}}=move.move_to)
 
@@ -83,7 +83,7 @@ function reset(move::EuclidTextMove;
         move.move_to[] = move_to
     end
 end
-function reset(move::EuclidTextMove;
+function reset(move::EuclidText3fMove;
     begin_at::Union{Point3f, Observable{Point3f}}=move.baseOn.location,
     move_to::Union{Point3f, Observable{Point3f}}=move.move_to)
 
