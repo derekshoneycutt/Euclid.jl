@@ -44,20 +44,13 @@ function move(surface::EuclidSurface3f, new_spot::Observable{Point3f};
     observable_begin = begin_at isa Observable{Point3f} ? Observable(begin_at[]) : Observable(begin_at)
     EuclidSurface3fMove(surface, observable_begin, new_spot, v, move_index)
 end
-
-"""
-    move(surface, new_spot[, begin_at, move_index=1])
-
-Set up a movement of a surface on the Euclid diagram
-
-# Arguments
-- `surface::EuclidSurface2f`: The surface to move in the diagram
-- `new_spot::Point2f`: The new spot to move the surface in the diagram to
-- `move_index::Int`: The index of the point to base movement on (defaults to 1)
-- `begin_at::Union{Point2f, Observable{Point2f}}`: The point to start the movements at (defaults to current location at time of definition)
-"""
 function move(surface::EuclidSurface2f, new_spot::Point2f;
     move_index::Int=1, begin_at::Union{Point2f, Observable{Point2f}}=surface.from_points[][1])
+
+    move(surface, Observable(new_spot), move_index=move_index, begin_at=begin_at)
+end
+function move(surface::EuclidSurface3f, new_spot::Point3f;
+    move_index::Int=1, begin_at::Union{Point3f, Observable{Point3f}}=surface.from_points[][1])
 
     move(surface, Observable(new_spot), move_index=move_index, begin_at=begin_at)
 end
