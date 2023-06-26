@@ -25,21 +25,9 @@ function get_start_end_θ(vec_θs::Vector{Float32}, larger::Bool)
     θ_use = (vec_θs[2] - vec_θs[1] <= π) ⊻ larger ? 1 : 2
 
     θ_start = vec_θs[θ_use]
-    θ_end = θ_use == 2 ? vec_θs[1] + 2π : vec_θs[2]
+    θ_end = θ_use == 2 ? vec_θs[1] + 2f0π : vec_θs[2]
 
     (θ_start, θ_end)
-end
-function get_start_end_θ(vec_θs::Vector{Tuple{Float32, Float32}}, larger::Bool)
-    ordered_θs = get_start_end_θ([vec_θs[1][1], vec_θs[2][1]], larger)
-
-    Φ_smaller = ordered_θs[1] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
-    Φ_larger = ordered_θs[2] == vec_θs[1][1] ? vec_θs[1][2] : vec_θs[2][2]
-    #if Φ_smaller > Φ_larger
-    #    Φ_larger = Φ_larger + 2π
-    #end
-
-    ((ordered_θs[1], Φ_smaller),
-     (ordered_θs[2], Φ_larger))
 end
 
 function get_drawing_angle(center::Point, pointA::Point, pointB::Point,
@@ -63,18 +51,6 @@ function get_angle_range(θ, larger::Bool, θ_start::Float32, θ_end::Float32, d
             Point2f0([cos(θ_end); sin(θ_end)]*√(((draw_at)^2)/2) + center)] :
         [Point2f0([cos(t); sin(t)]*draw_at + center) for t in θ_start:(π/180):θ_end]
 end
-function get_angle_range(θ, larger::Bool, θ_start::Tuple{Float32, Float32}, θ_end::Tuple{Float32, Float32}, draw_at, center::Point3)
-    isapprox(θ, π/2, atol=0.0001) && !larger ?
-        [Point3f0([sin(θ_start[2])*cos(θ_start[1]); sin(θ_start[2])*sin(θ_start[1]); cos(θ_start[2])]*√(((draw_at)^2)/2) + center),
-            Point3f0([sin(θ_start[2]+((θ_end[2]-θ_start[2])/2))*cos(θ_start[1]+((θ_end[1]-θ_start[1])/2));
-                      sin(θ_start[2]+((θ_end[2]-θ_start[2])/2))*sin(θ_start[1]+((θ_end[1]-θ_start[1])/2));
-                      cos(θ_start[2]+((θ_end[2]-θ_start[2])/2))]*draw_at + center),
-            Point3f0([sin(θ_end[2])*cos(θ_end[1]); sin(θ_end[2])*sin(θ_end[1]); cos(θ_end[2])]*√(((draw_at)^2)/2) + center)] :
-        [Point3f0([sin(θ_start[2]+((θ_end[2]-θ_start[2])*t))*cos(θ_start[1]+((θ_end[1]-θ_start[1])*t));
-                   sin(θ_start[2]+((θ_end[2]-θ_start[2])*t))*sin(θ_start[1]+((θ_end[1]-θ_start[1])*t));
-                   cos(θ_start[2]+((θ_end[2]-θ_start[2])*t))]*draw_at + center) for t in 0f0:(180f0*θ/360f0π):1f0]
-end
-
 
 """
     get_angle_measure_observables(cener, pointA, pointB, larger, angle_rad)
@@ -90,22 +66,6 @@ Gets the angle measurements used to draw an angle in Euclid diagrams
 """
 function get_angle_measure_observables(
         center::Observable{Point2f}, pointA::Observable{Point2f}, pointB::Observable{Point2f},
-        larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
-
-    vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
-
-    θ_start_end = @lift(get_start_end_θ($vec_θs, larger))
-
-    θ_draw_at = angle_rad isa Observable{Float32} ?
-                    @lift(get_drawing_angle($center, $pointA, $pointB, $angle_rad)) :
-                    @lift(get_drawing_angle($center, $pointA, $pointB, angle_rad))
-
-    angle_range = @lift(get_angle_range(($θ_draw_at)[1], larger, ($θ_start_end)[1], ($θ_start_end)[2], ($θ_draw_at)[2], $center))
-
-    EuclidAngleObservables(@lift(($θ_start_end)[1]), @lift(($θ_start_end)[2]), @lift(($θ_draw_at)[2]), @lift(($θ_draw_at)[1]), angle_range)
-end
-function get_angle_measure_observables(
-        center::Observable{Point3f}, pointA::Observable{Point3f}, pointB::Observable{Point3f},
         larger::Bool, angle_rad::Union{Float32, Observable{Float32}})
 
     vec_θs = @lift(get_vecθs($center, $pointA, $pointB))
@@ -168,20 +128,6 @@ fix_angle(θ::AbstractFloat) = begin
     end
     ret
 end
-fix_angle(angles::Tuple{AbstractFloat, AbstractFloat}) = begin
-    θ = angles[1]
-    Φ = angles[2]
-    θ = θ % 2f0π
-    Φ = Φ % 2f0π
-    while θ < 0f0
-        θ = θ + 2f0π
-    end
-    while Φ < 0f0
-        Φ = Φ + 2f0π
-    end
-    (θ, Φ)
-end
-
 """
     vector_angle(A, B)
 
@@ -198,16 +144,6 @@ function vector_angle(A::Point2, B::Point2)
     r = norm(v)
     θ = acos(v[1]/r)
     (v[2] >= 0 ? 1 : -1) * (θ == 0f0 && v[1] < 0 ? π : θ)
-end
-function vector_angle(A::Point3, B::Point3)
-    v = B-A
-    r = norm(v)
-    θ = acos(v[1] / r)
-    θ = (v[2] >= 0 ? 1 : -1) * (θ == 0f0 && v[1] < 0 ? π : θ)
-    Φ = acos(v[1] / (r * sin(θ)))
-    Φ = (v[3] >= 0 ? 1 : -1) * (Φ == 0f0 && v[2] < 0 ? π : Φ)
-
-    (θ, Φ)
 end
 
 

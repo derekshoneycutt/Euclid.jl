@@ -14,6 +14,7 @@ mutable struct EuclidAngle{N}
     current_anglerad::Observable{Float32}
     current_width::Observable{Float32}
     show_width::Observable{Float32}
+    angle_points
 end
 EuclidAngle2f = EuclidAngle{2}
 EuclidAngle3f = EuclidAngle{3}
@@ -71,23 +72,21 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f}, p
           poly!(@lift([Point2f0(p) for p in vcat($(angle_data.angle_range), [$center])]),
                 color=color, strokewidth=0f0)]
 
-    EuclidAngle2f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width)
+    EuclidAngle2f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width, nothing)
 end
 function plane_angle(center::Observable{Point3f}, pointA::Observable{Point3f}, pointB::Observable{Point3f};
-                     width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                     width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
 
     observable_width = Observable(0f0)
     observable_show_width = width isa Observable{Float32} ? width : Observable(width)
     observable_anglerad = Observable(0f0)
 
-    angle_data = get_angle_measure_observables(center, pointA, pointB, larger, observable_anglerad)
+    pl = [mesh!(@lift(Cylinder(Point3f0($pointA), Point3f0($center), $observable_width)),
+                   color=color),
+          mesh!(@lift(Cylinder(Point3f0($pointB), Point3f0($center), $observable_width)),
+                   color=color)]
 
-    pl = [lines!(@lift([Point3f0($pointA), Point3f0($center), Point3f0($pointB)]),
-                 color=color, linewidth=(observable_width)),
-          mesh!(@lift(triangulate_arch($(angle_data.angle_range), $center)),
-                color=color, strokewidth=0f0)]
-
-    EuclidAngle2f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width)
+    EuclidAngle3f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width, nothing)
 end
 function plane_angle(center::Observable{Point2f}, pointA::Point2f, pointB::Point2f;
                 width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
@@ -118,31 +117,31 @@ function plane_angle(center::Point2f, pointA::Point2f, pointB::Point2f;
     plane_angle(Observable(center), Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end
 function plane_angle(center::Observable{Point3f}, pointA::Point3f, pointB::Point3f;
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(center, Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end
 function plane_angle(center::Observable{Point3f}, pointA::Observable{Point3f}, pointB::Point3f;
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(center, pointA, Observable(pointB), width=width, color=color, larger=larger)
 end
 function plane_angle(center::Observable{Point3f}, pointA::Point3f, pointB::Observable{Point3f};
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(center, Observable(pointA), pointB, width=width, color=color, larger=larger)
 end
 function plane_angle(center::Point3f, pointA::Observable{Point3f}, pointB::Point3f;
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), pointA, Observable(pointB), width=width, color=color, larger=larger)
 end
 function plane_angle(center::Point3f, pointA::Observable{Point3f}, pointB::Observable{Point3f};
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), pointA, pointB, width=width, color=color, larger=larger)
 end
 function plane_angle(center::Point3f, pointA::Point3f, pointB::Observable{Point3f};
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), Observable(pointA), pointB, width=width, color=color, larger=larger)
 end
 function plane_angle(center::Point3f, pointA::Point3f, pointB::Point3f;
-                width::Union{Float32, Observable{Float32}}=1.5f0, color=:blue, larger::Bool=false)
+                width::Union{Float32, Observable{Float32}}=0.02f0, color=:blue, larger::Bool=false)
     plane_angle(Observable(center), Observable(pointA), Observable(pointB), width=width, color=color, larger=larger)
 end
 
@@ -157,6 +156,7 @@ Completely show previously defined angle in a Euclid diagram
 function show_complete(angle::EuclidAngle)
     angle.current_width[] = angle.show_width[]
     angle.current_anglerad[] = 0.25f0
+    display(angle.angle_points[])
 end
 
 """

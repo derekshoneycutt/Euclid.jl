@@ -30,7 +30,9 @@ This always reflects on the x-axis. Combine with rotation for other reflections.
 - `axis::Symbol` : The axis to reflect across;
     2D can be :x, :y, :diag, :negdiag, or :origin;
     3D can be :xy, :xz, :yz, :diag3, :negdiag3, :altdiag3, or :origin3
-- `axis_offset::Union{Float32,Observable{Float32}}`: The position of the axis to reflect across
+- `axis_offset_x::Union{Float32,Observable{Float32}}`: The position of the x axis to reflect across
+- `axis_offset_y::Union{Float32,Observable{Float32}}`: The position of the y axis to reflect across
+- `axis_offset_z::Union{Float32,Observable{Float32}}`: The position of the z axis to reflect across
 """
 function reflect(line::EuclidLine2f;
                  axis::Symbol=:x,
@@ -70,23 +72,37 @@ Reset a rotation animation for a line in a Euclid Diagram to new positions
 - `axis::Symbol` : The axis to reflect across;
     2D can be :x, :y, :diag, :negdiag, or :origin;
     3D can be :xy, :xz, :yz,  :diag3, :negdiag3, :altdiag3, or :origin3
-- `axis_offset::Union{Float32,Observable{Float32}}`: The position of the x-axis to reflect on
+- `axis_offset_x::Union{Float32,Observable{Float32}}`: The position of the x-axis to reflect on
+- `axis_offset_y::Union{Float32,Observable{Float32}}`: The position of the y-axis to reflect on
+- `axis_offset_z::Union{Float32,Observable{Float32}}`: The position of the z-axis to reflect on
 """
-function reset(reflect::EuclidLine2fReflect; axis::Symbol=reflect.axis, axis_offset::Union{Float32,Observable{Float32}}=reflect.reflect_x)
+function reset(reflect::EuclidLine2fReflect;
+               axis::Symbol=reflect.axis,
+               axis_offset_x::Union{Float32,Observable{Float32}}=reflect.axis_offset_x,
+               axis_offset_y::Union{Float32,Observable{Float32}}=reflect.axis_offset_y)
 
     if axis != :x && axis != :y && axis != :diag && axis != :negdiag && axis != :origin
         throw("Unsupported axis for 2D reflection. Supported symbols: :x, :y, :diag, or :negdiag")
     end
     reflect.start_atA[] = reflect.baseOn.extremityA[]
     reflect.start_atB[] = reflect.baseOn.extremityB[]
-    if axis_offset isa Observable{Float32}
-        reflect.axis_offset = axis_offset
+    if axis_offset_x isa Observable{Float32}
+        reflect.axis_offset_x = axis_offset_x
     else
-        reflect.axis_offset[] = axis_offset
+        reflect.axis_offset_x[] = axis_offset_x
+    end
+    if axis_offset_y isa Observable{Float32}
+        reflect.axis_offset_y = axis_offset_y
+    else
+        reflect.axis_offset_y[] = axis_offset_y
     end
     reflect.axis = axis
 end
-function reset(reflect::EuclidLine3fReflect; axis::Symbol=reflect.axis, axis_offset::Union{Float32,Observable{Float32}}=reflect.reflect_x)
+function reset(reflect::EuclidLine3fReflect;
+               axis::Symbol=reflect.axis,
+               axis_offset_x::Union{Float32,Observable{Float32}}=reflect.axis_offset_x,
+               axis_offset_y::Union{Float32,Observable{Float32}}=reflect.axis_offset_y,
+               axis_offset_z::Union{Float32,Observable{Float32}}=reflect.axis_offset_z)
 
     if axis != :xy && axis != :yz && axis != :xz &&
             axis != :diag3 && axis != :negdiag3 && axis != :altdiag3 && axis != :origin3
@@ -94,10 +110,20 @@ function reset(reflect::EuclidLine3fReflect; axis::Symbol=reflect.axis, axis_off
     end
     reflect.start_atA[] = reflect.baseOn.extremityA[]
     reflect.start_atB[] = reflect.baseOn.extremityB[]
-    if axis_offset isa Observable{Float32}
-        reflect.axis_offset = axis_offset
+    if axis_offset_x isa Observable{Float32}
+        reflect.axis_offset_x = axis_offset_x
     else
-        reflect.axis_offset[] = axis_offset
+        reflect.axis_offset_x[] = axis_offset_x
+    end
+    if axis_offset_y isa Observable{Float32}
+        reflect.axis_offset_y = axis_offset_y
+    else
+        reflect.axis_offset_y[] = axis_offset_y
+    end
+    if axis_offset_z isa Observable{Float32}
+        reflect.axis_offset_z = axis_offset_z
+    else
+        reflect.axis_offset_z[] = axis_offset_z
     end
     reflect.axis = axis
 end

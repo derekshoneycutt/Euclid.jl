@@ -11,6 +11,7 @@ mutable struct EuclidSurface{N}
     plots
     current_opacity::Observable{Float32}
     show_opacity::Observable{Float32}
+    mesh::Observable
 end
 EuclidSurface2f = EuclidSurface{2}
 EuclidSurface3f = EuclidSurface{3}
@@ -39,7 +40,8 @@ function plane_surface(points::Observable{Vector{Point2f}};
                   strokewidth=0f0)
 
     EuclidSurface2f(points, plots,
-                    observable_opacity, observable_show_opacity)
+                    observable_opacity, observable_show_opacity,
+                    Observable(nothing))
 end
 function plane_surface(points::Vector{Point2f};
                       color=:blue, opacity::Union{Float32,Observable{Float32}}=1f0)
@@ -55,13 +57,16 @@ function plane_surface(points::Observable{Vector{Point3f}};
                               opacity :
                               Observable(opacity)
 
-    xs = @lift([p[1] for p in $points])
-    ys = @lift([p[2] for p in $points])
-    zs = @lift([p[3] for p in $points])
-    plots = surface!(xs, ys, zs, colormap=@lift([opacify(color, $observable_opacity)]))
+    mesh =
+        if length(points[]) == 4
+            @lift(GeometryBasics.Mesh($points, [2,3,1,4]))
+        else
+            @lift(GeometryBasics.mesh($points))
+        end
+    plots = mesh!(mesh, color=@lift([opacify(color, $observable_opacity) for i in 1:length($points)]))
 
     EuclidSurface3f(points, plots,
-                    observable_opacity, observable_show_opacity)
+                    observable_opacity, observable_show_opacity, mesh)
 end
 function plane_surface(points::Vector{Point3f};
                       color=:blue, opacity::Union{Float32,Observable{Float32}}=1f0)
