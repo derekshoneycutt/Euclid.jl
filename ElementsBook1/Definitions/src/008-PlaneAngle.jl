@@ -156,7 +156,6 @@ Completely show previously defined angle in a Euclid diagram
 function show_complete(angle::EuclidAngle)
     angle.current_width[] = angle.show_width[]
     angle.current_anglerad[] = 0.25f0
-    display(angle.angle_points[])
 end
 
 """
