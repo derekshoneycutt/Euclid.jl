@@ -73,10 +73,12 @@ function plane_angle(center::Observable{Point2f}, pointA::Observable{Point2f},
 
     angle_data = get_angle_measure_observables(center, pointA, pointB, larger, observable_anglerad)
 
-    pl = [lines!(@lift([Point2f0($pointA), Point2f0($center), Point2f0($pointB)]),
+    pl = [lines!(@lift([Point2f0($pointA), Point2f0($center)]),
                  color=linecolor, linewidth=(observable_width)),
+          lines!(@lift([oint2f0($center), Point2f0($pointB)]),
+                 color=linecolorB, linewidth=(observable_width)),
           poly!(@lift([Point2f0(p) for p in vcat($(angle_data.angle_range), [$center])]),
-                color=linecolorB, strokewidth=0f0)]
+                color=color, strokewidth=0f0)]
 
     EuclidAngle2f(center, pointA, pointB, pl, observable_anglerad, observable_width, observable_show_width, nothing)
 end
