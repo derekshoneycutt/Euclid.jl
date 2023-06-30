@@ -155,14 +155,8 @@ function animate(reflect::EuclidAngle2fReflect,
     end_atC = reflect_matrix * (reflect.start_atC[] - offset_matrix) + offset_matrix
 
     vA = end_atA - reflect.start_atA[]
-    norm_vA = norm(vA)
-    uA = vA / norm_vA
     vB = end_atB - reflect.start_atB[]
-    norm_vB = norm(vB)
-    uB = vB / norm_vB
     vC = end_atC - reflect.start_atC[]
-    norm_vC = norm(vC)
-    uC = vC / norm_vC
 
     perform(t, begin_reflect, end_reflect,
          () -> begin
@@ -173,9 +167,9 @@ function animate(reflect::EuclidAngle2fReflect,
          () -> nothing) do
         on_t = (t - begin_reflect)/(end_reflect - begin_reflect)
         if on_t > 0
-            reflect.baseOn.extremityA[] = reflect.start_atA[] + on_t * uA * norm_vA
-            reflect.baseOn.extremityB[] = reflect.start_atB[] + on_t * uB * norm_vB
-            reflect.baseOn.point[] = reflect.start_atC[] + on_t * uC * norm_vC
+            reflect.baseOn.extremityA[] = reflect.start_atA[] + on_t * vA
+            reflect.baseOn.extremityB[] = reflect.start_atB[] + on_t * vB
+            reflect.baseOn.point[] = reflect.start_atC[] + on_t * vC
         else
             reflect.baseOn.extremityA[] = end_atA
             reflect.baseOn.extremityB[] = end_atB
