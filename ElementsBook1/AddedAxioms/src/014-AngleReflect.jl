@@ -44,7 +44,7 @@ function reflect(angle::EuclidAngle2f;
     end
     reflect_offset_x = axis_offset_x isa Observable{Float32} ? axis_offset_x : Observable(axis_offset_x)
     reflect_offset_y = axis_offset_y isa Observable{Float32} ? axis_offset_y : Observable(axis_offset_y)
-    EuclidAngle2fReflect(angle, reflect_offset_x, reflect_offset_y, angle.extremityA, angle.extremityB, angle.point, axis)
+    EuclidAngle2fReflect(angle, reflect_offset_x, reflect_offset_y, Observable(0f0), angle.extremityA, angle.extremityB, angle.point, axis)
 end
 
 """
