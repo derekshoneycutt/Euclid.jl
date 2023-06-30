@@ -72,9 +72,9 @@ Reset a rotation animation for a surface in a Euclid Diagram to new positions
 - `axis::Symbol` : The axis to reflect across;
     2D can be :x, :y, :diag, :negdiag, or :origin;
     3D can be :xy, :xz, :yz,  :diag3, :negdiag3, :altdiag3, or :origin3
-    - `axis_offset_x::Union{Float32,Observable{Float32}}`: The position of the x-axis to reflect on
-    - `axis_offset_y::Union{Float32,Observable{Float32}}`: The position of the y-axis to reflect on
-    - `axis_offset_z::Union{Float32,Observable{Float32}}`: The position of the z-axis to reflect on
+- `axis_offset_x::Union{Float32,Observable{Float32}}`: The position of the x-axis to reflect on
+- `axis_offset_y::Union{Float32,Observable{Float32}}`: The position of the y-axis to reflect on
+- `axis_offset_z::Union{Float32,Observable{Float32}}`: The position of the z-axis to reflect on
 """
 function reset(reflect::EuclidSurface2fReflect;
                axis::Symbol=reflect.axis,
