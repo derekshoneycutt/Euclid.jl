@@ -44,7 +44,8 @@ function reflect(angle::EuclidAngle2f;
     end
     reflect_offset_x = axis_offset_x isa Observable{Float32} ? axis_offset_x : Observable(axis_offset_x)
     reflect_offset_y = axis_offset_y isa Observable{Float32} ? axis_offset_y : Observable(axis_offset_y)
-    EuclidAngle2fReflect(angle, reflect_offset_x, reflect_offset_y, Observable(0f0), angle.extremityA, angle.extremityB, angle.point, axis)
+    EuclidAngle2fReflect(angle, reflect_offset_x, reflect_offset_y, Observable(0f0),
+        Observable(angle.extremityA[]), Observable(angle.extremityB[]), Observable(angle.point[]), axis)
 end
 
 """
@@ -68,6 +69,9 @@ function reset(reflect::EuclidAngle2fReflect;
     if axis != :x && axis != :y && axis != :diag && axis != :negdiag && axis != :origin
         throw("Unsupported axis for 2D reflection. Supported symbols: :x, :y, :diag, or :negdiag")
     end
+    reflect.start_atA[] = reflect.baseOn.extremityA[]
+    reflect.start_atB[] = reflect.baseOn.extremityB[]
+    reflect.start_atC[] = reflect.baseOn.point[]
     if axis_offset_x isa Observable{Float32}
         reflect.axis_offset_x = axis_offset_x
     else
