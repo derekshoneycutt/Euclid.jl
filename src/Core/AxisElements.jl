@@ -188,10 +188,10 @@ Create a right angle legend element for displaying on Euclid diagrams
 - `draw_angle`: Whether to draw the angle between the lines or just the lines
 """
 function obtuse_angle_legend(; color=:blue, linewidth::AbstractFloat=1.5f0, linestyle=:solid, draw_angle=:filled)
-    origin = Point2f0(0.5,0)
+    origin = Point2f0(0.15,0)
     base_extrem = Point2f0(1,0)
     angle_extrem = Point2f0(cos(3π/4) * 0.5f0, sin(3π/4))
-    angle_lines = [Point2f0(cos(θ) * 0.25f0 + 0.5f0, sin(θ) * 0.25f0) for θ in 0:(π/40):(3π/4)]
+    angle_lines = [Point2f0(cos(θ) * 0.25f0 + 0.15f0, sin(θ) * 0.25f0) for θ in 0:(π/80):(3π/4)]
     angle_poly = [Point2f0(p) for p in vcat(angle_lines, [origin])]
 
     lines = LineElement(points=[base_extrem, origin, angle_extrem], color=color, linewidth=linewidth, linestyle=linestyle)
