@@ -55,6 +55,16 @@ include("AddedAxioms/src/014-AngleReflect.jl")
 # Definition 9
 include("Definitions/src/009-RectilinealAngle.jl")
 
+# Definition 15 and resulting axioms
+include("Definitions/src/015-Circle.jl")
+include("AddedAxioms/src/015-CircleHighlight.jl")
+include("AddedAxioms/src/016-CircleMove.jl")
+include("AddedAxioms/src/017-CircleLineIntersect.jl")
+include("AddedAxioms/src/018-CircleIntersect.jl")
+
+# Definition 17
+include("Definitions/src/017-Diameter.jl")
+
 
 
 # ==============================================
