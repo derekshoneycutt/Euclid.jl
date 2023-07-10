@@ -53,7 +53,7 @@ Create a circle legend element for displaying on Euclid diagrams
 - `center::Point2f`: Where to draw the center of the circle at, defaults to center position
 """
 function circle_legend(; width::AbstractFloat=0.1f0, color=:blue, center::Point2f=Point2f0(0.5,0.5))
-    axis_element_points = [Point2f0(center[1] + cos(t) * width, center[2] + sin(t) * width) for t in 1:360]
+    axis_element_points = [Point2f0(center[1] + cos(t) * width, center[2] + sin(t) * width) for t in 0:(π/180):2π]
     PolyElement(points=axis_element_points, color=color, strokecolor=color, strokewidth=1)
 end
 
@@ -70,7 +70,25 @@ Create a circle legend element for displaying on Euclid diagrams
 function circle_outline_legend(; width::AbstractFloat=0.1f0, color=:blue,
                                 linestyle=:solid, linewidth::AbstractFloat=1.5f0,
                                 center::Point2f=Point2f0(0.5,0.5))
-    axis_element_points = [Point2f0(center[1] + cos(t) * width, center[2] + sin(t) * width) for t in 1:360]
+    axis_element_points = [Point2f0(center[1] + cos(t) * width, center[2] + sin(t) * width) for t in 0:(π/180):2π]
+    LineElement(points=axis_element_points, color=color, linestyle=linestyle, linewidth=linewidth)
+end
+
+"""
+    semicircle_outline_legend([width=0.1f0, color=:blue, center=Point2f0(0.5,0.5)])
+
+Create a semicircle legend element for displaying on Euclid diagrams
+
+# Arguments
+- `width::AbstractFloat`: The width, as a radius, of the circle to draw
+- `color`: The color of circle to draw
+- `center::Point2f`: Where to draw the center of the circle at, defaults to center position
+"""
+function semicircle_outline_legend(; width::AbstractFloat=0.1f0, color=:blue,
+                                linestyle=:solid, linewidth::AbstractFloat=1.5f0,
+                                center::Point2f=Point2f0(0.5,0.5))
+    axis_element_points = [Point2f0(center[1] + cos(t) * width, center[2] + sin(t) * width) for t in 0:(π/180):π]
+    axis_element_points = vcat(axis_element_points, [Point2f0(center[1] + cos(0) * width, center[2] + sin(0) * width)])
     LineElement(points=axis_element_points, color=color, linestyle=linestyle, linewidth=linewidth)
 end
 
