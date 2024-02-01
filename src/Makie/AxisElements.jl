@@ -99,19 +99,32 @@ function semicircle_outline_legend(; width::AbstractFloat=0.1f0, color=:blue,
 end
 
 """
-    circle_legend([width=0.1f0, color=:blue, center=Point2f0(0.5,0.5)])
+    square_legend([width=0.1f0, color=:blue, center=Point2f0(0.5,0.5)])
 
-Create a circle legend element for displaying on Euclid diagrams
+Create a square legend element for displaying on Euclid diagrams
 
 # Arguments
-- `width::AbstractFloat`: The width, as a radius, of the circle to draw
-- `color`: The color of circle to draw
-- `center::Point2f`: Where to draw the center of the circle at, defaults to center position
+- `width::AbstractFloat`: The width of the square to draw
+- `color`: The color of square to draw
+- `center::Point2f`: Where to draw the center of the square at, defaults to center position
 """
 function square_legend(; width::AbstractFloat=1f0, color=:blue, center::Point2f=Point2f0(0.5,0.5))
     from_center = width / 2f0
     do_box = [Point2f0(center .- from_center),  Point2f0(center - [from_center, -from_center]),
               Point2f0(center .+ from_center), Point2f0(center - [-from_center, from_center])]
+    PolyElement(points=do_box, color=color, strokecolor=color, strokewidth=0)
+end
+
+"""
+    triangle_legend([width=0.1f0, color=:blue, center=Point2f0(0.5,0.5)])
+
+Create a triangle legend element for displaying on Euclid diagrams
+
+# Arguments
+- `color`: The color of square to draw
+"""
+function square_legend(; color=:blue)
+    do_box = [Point2f0(0, 0), Point2f0(1, 0), Piont2f0(0.5, 0.86602545)]
     PolyElement(points=do_box, color=color, strokecolor=color, strokewidth=0)
 end
 

@@ -4,7 +4,8 @@ export get_color, opacify, color_shift, shift_color
 suggested_pallete = [
     :steelblue,
     :khaki3,
-    :palevioletred1
+    :palevioletred1,
+    :gray60
 ]
 
 """
