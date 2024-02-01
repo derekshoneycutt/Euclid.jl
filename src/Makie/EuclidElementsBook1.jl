@@ -181,16 +181,6 @@ end
 
 function draw(angle::EuclidAngle3f)
     # This code kinda sucks, but it works for now
-    function vector_angles(vector::Point3f)
-        θ = acos(vector[3] / norm(vector))
-        θ = (vector[2] >= 0 ? 1 : -1) * (θ == 0f0 && vector[1] < 0 ? π : θ)
-        ϕ = atan(vector[2], vector[1])
-
-        (θ, ϕ)
-    end
-    function Point3f0_spherical(θ::Float32, ϕ::Float32, r::Float32)
-        Point3f0(sin(θ) * cos(ϕ) * r, sin(θ) * sin(ϕ) * r, cos(θ) * r)
-    end
     function points_between(center::Point3f, start::Point3f, final::Point3f,
             iters::Int, r::Float32)
         vec = final - start
@@ -211,30 +201,14 @@ function draw(angle::EuclidAngle3f)
             ]
         end
     end
-    function points_between(center::Point3f0, θ_start::Float32, θ_end::Float32,
-        ϕ_start::Float32, ϕ_end::Float32, iters::Int, r::Float32)
-
-        start = Point3f0_spherical(θ_start, ϕ_start, r)
-        final = Point3f0_spherical(θ_end, ϕ_end, r)
-        points_between(center, start, final, iters, r)
-    end
-    function get_start_end_θ(θA::Float32, ϕA::Float32, θB::Float32, ϕB::Float32, larger::Bool)
-        #=θ_use = (θB - θA <= π) ⊻ larger ? 1 : 2
-
-        θ_start = θ_use == 1 ? (θA, ϕA) : (θB, ϕB)
-        θ_end = θ_use == 2 ? (θA + 2f0π, ϕA) : (θB, ϕB)
-
-        (θ_start, θ_end)=#
-        ((θA, ϕA), (θB, ϕB))
-    end
     function get_triangledface1(center::Point3f0, vecA::Point3f0, vecB::Point3f0,
         angle_perp_vect::Point3f0, width::Float32,
-        θ_start::Float32, θ_end::Float32, ϕ_start::Float32, ϕ_end::Float32,
         iters::Int, radius::Float32)
 
         use_center = center + (angle_perp_vect * width)
-        pbetween = points_between(center, θ_start, θ_end, ϕ_start, ϕ_end,
-            iters, radius)
+        start = vecA * radius
+        final = vecB * radius
+        pbetween = points_between(use_center, start, final, iters, radius)
         angle_points = [p + (angle_perp_vect * width) for p in pbetween]
         points = vcat([use_center], angle_points)
         triangles = TriangleFace{Int}[TriangleFace([1, i + 1, i + 2]) for i in 1:iters]
@@ -268,26 +242,19 @@ function draw(angle::EuclidAngle3f)
 
     vecA = @lift($(angle.data).vectorA)
     vecB = @lift($(angle.data).vectorB)
+    θ_between = @lift($(angle.data).angle)
     center = @lift($(angle.data).intersect.definition)
     radius = @lift($(angle.data).radius)
     width = @lift($(angle.data).width)
     opacity = @lift($(angle.data).opacity)
     color = @lift($(angle.data).color)
-    larger = false
 
-    θ_between = @lift(acos(($vecA ⋅ $vecB) / (norm($vecA) * norm($vecB))))
     iters = @lift(isapprox($θ_between, π/2, atol=0.0001) ? 2 : 30)
-
-    anglesA = @lift(vector_angles($vecA))
-    anglesB = @lift(vector_angles($vecB))
-    angles = @lift(
-        get_start_end_θ(($anglesA)[1], ($anglesA)[2], ($anglesB)[1], ($anglesB)[2], larger))
 
     angle_perp_vect = @lift(normalize($vecA × $vecB))
     mod_vec = @lift($angle_perp_vect * (-($width) * 2))
 
     ptriangles1 = @lift(get_triangledface1($center, $vecA, $vecB, $angle_perp_vect, $width,
-        ($angles)[1][1], ($angles)[2][1], ($angles)[1][2], ($angles)[2][2],
         $iters, $radius))
 
     ptriangles2 = @lift(get_triangledface2($mod_vec, ($ptriangles1)[1], $iters))

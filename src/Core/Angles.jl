@@ -68,14 +68,6 @@ struct EuclidSpaceAngleTransform
     shift_color::Union{Point3f, Nothing}
 end
 
-function get_θ(A::Point, B::Point)
-    θ = acos((A ⋅ B) / (norm(A) * norm(B)))
-    if (A[2] >= 0) || (θ == 0f0 && A[1] < 0)
-        θ = θ + π
-    end
-    return θ
-end
-
 
 """
     euclidean_angle(intersect, vectorA, vectorB[, radius=0f0, width=0f0, opacity=0f0, color=:blue])
@@ -96,7 +88,7 @@ function euclidean_angle(intersect::EuclidSpacePoint2f, vectorA::Point2f, vector
     A = Point2f(normalize(vectorA))
     B = Point2f(normalize(vectorB))
 
-    θ = get_θ(A, B)
+    θ = acos((A ⋅ B) / (norm(A) * norm(B)))
 
     EuclidSpaceAngle2f(intersect, A, B, θ, radius, width, opacity, get_color(color))
 end
@@ -105,7 +97,7 @@ function euclidean_angle(intersect::EuclidSpacePoint3f, vectorA::Point3f, vector
     A = Point3f(normalize(vectorA))
     B = Point3f(normalize(vectorB))
 
-    θ = get_θ(A, B)
+    θ = acos((A ⋅ B) / (norm(A) * norm(B)))
 
     EuclidSpaceAngle3f(intersect, A, B, θ, radius, width, opacity, get_color(color))
 end
