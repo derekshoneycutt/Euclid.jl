@@ -208,7 +208,7 @@ function draw(angle::EuclidAngle3f)
         use_center = center + (angle_perp_vect * width)
         start = vecA * radius
         final = vecB * radius
-        pbetween = points_between(use_center, start, final, iters, radius)
+        pbetween = points_between(center, start, final, iters, radius)
         angle_points = [p + (angle_perp_vect * width) for p in pbetween]
         points = vcat([use_center], angle_points)
         triangles = TriangleFace{Int}[TriangleFace([1, i + 1, i + 2]) for i in 1:iters]
