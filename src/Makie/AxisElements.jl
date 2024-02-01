@@ -125,7 +125,7 @@ Create a triangle legend element for displaying on Euclid diagrams
 - `color`: The color of square to draw
 """
 function triangle_legend(; color=:blue)
-    do_box = [Point2f0(0.25f0, 0.067f0), Point2f0(0.75, 0.067f0), Point2f0(0.5, 1)]
+    do_box = [Point2f0(0, 0), Point2f0(1, 0), Point2f0(0.5, 0.86602545)]
     PolyElement(points=do_box, color=color, strokecolor=color, strokewidth=0)
 end
 
