@@ -6,29 +6,40 @@
 
 using GeometryBasics;
 using LinearAlgebra;
-using Symbolics;
+using Colors;
+using Observables;
+using Distributions;
+using ReusePatterns;
+
+using GLMakie;
 using LaTeXStrings;
 using Latexify;
-using Colors;
-using GLMakie;
-using Distributions;
 using Base64;
 
 export Observable, @L_str, Point2f, Point2f0, Point3f, Point3f0
 
 # Load the core library features
-include("Core/Paths.jl");
-include("Core/Angles.jl");
-include("Core/Surfaces.jl");
 include("Core/Colors.jl");
-include("Core/ChartSpace.jl");
-include("Core/Animations.jl");
-include("Core/AxisElements.jl");
-include("Core/Text.jl");
-include("Core/TextMove.jl");
+include("Core/Matrices.jl");
+include("Core/Points.jl");
+include("Core/Lines.jl");
+include("Core/Surfaces.jl");
+include("Core/Angles.jl");
+include("Core/Circles.jl");
 
+
+# Load Base components/widgets
+include("Base/Animations.jl");
+include("Base/Text.jl");
 
 
 # Load Euclid Elements books
-include("../ElementsBook1/EuclidElementsBook1.jl");
+include("ElementsBook1/EuclidElementsBook1.jl");
 
+
+# Load the Makie code
+include("Makie/ChartSpace.jl");
+include("Makie/AxisElements.jl");
+include("Makie/Animations.jl");
+include("Makie/Base.jl");
+include("Makie/EuclidElementsBook1.jl");

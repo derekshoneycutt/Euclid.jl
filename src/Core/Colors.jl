@@ -1,5 +1,11 @@
 
-export get_color, opacify
+export get_color, opacify, color_shift, shift_color
+
+suggested_pallete = [
+    :steelblue,
+    :khaki3,
+    :palevioletred1
+]
 
 """
     get_color(:symbol)
@@ -51,4 +57,40 @@ Get an RGBA based on a color value, but with specified opacity
 function opacify(color, opacity::AbstractFloat)
     use_color = get_color(color)
     RGBA(use_color.r, use_color.g, use_color.b, opacity)
+end
+
+"""
+    color_shift(color1, color2)
+
+Get a vector representing the shift in RGB values between 2 colors
+
+# Arguments
+- `start`: The starting color for the vector
+- `target`: The target color that the vector points to
+"""
+function color_shift(start, target)
+    startc = get_color(start)
+    targetc = get_color(target)
+
+    Start = Float32[startc.r, startc.g, startc.b]
+    Target = Float32[targetc.r, targetc.g, targetc.b]
+
+    diff = Target - Start
+
+    return Point3f(diff)
+end
+
+"""
+    shift_color(color, shift)
+
+Shift a color by some vector covering RGB values
+
+# Arguments
+- `color`: The original color to shift
+- `shift::Point3f`: The vector to apply and get a new color with
+"""
+function shift_color(color, shift::Point3f)
+    c = get_color(color)
+    C = [c.r, c.g, c.b] + shift
+    return RGB(C[1], C[2], C[3])
 end

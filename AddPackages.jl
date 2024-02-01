@@ -4,12 +4,14 @@
 
 using Pkg
 
-Pkg.add("GLMakie")
-Pkg.add("Symbolics")
-Pkg.add("Latexify")
-Pkg.add("LaTeXStrings")
-Pkg.add("LinearAlgebra")
 Pkg.add("GeometryBasics")
+Pkg.add("LinearAlgebra")
 Pkg.add("Colors")
+Pkg.add("Observables")
 Pkg.add("Distributions")
+Pkg.add("ReusePatterns")
+
+Pkg.add("GLMakie")
+Pkg.add("LaTeXStrings")
+Pkg.add("Latexify")
 Pkg.add("Base64")
