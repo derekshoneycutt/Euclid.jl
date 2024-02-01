@@ -1,5 +1,5 @@
 
-export EuclidChartSpace, euclid_chart, euclid_chart3, euclid_legend
+export EuclidChartSpace, euclid_chart, euclid_chart3, euclid_chart3xy, euclid_legend
 
 """
     EuclidChartSpace
