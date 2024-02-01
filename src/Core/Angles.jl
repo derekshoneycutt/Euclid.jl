@@ -1,5 +1,5 @@
 export EuclidSpaceAngle, EuclidSpaceAngle2f, EuclidSpaceAngle3f, EuclidAngleVector,
-    EuclidSpaceAngleTransform, eculidean_angle, euclidean_angle_transform,
+    EuclidSpaceAngleTransform, euclidean_angle, euclidean_angle_transform,
     compose, perform, lines, vector,
     changeradius_angle, changewidth_angle, changeopacity_angle, shiftcolor_angle,
     move_angle, arcmove_angle, rotate_angle, reflect, scale, shear
