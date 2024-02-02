@@ -235,8 +235,8 @@ function highlight(angle::EuclidAngle2f, color_shift::Point3f,
     duration = end_time - start_time
     ptime(p) = Float32(start_time + (duration * p))
     [shift_color(angle, color_shift, start_time, ptime(0.1)),
-     resize(angle, 0, add_radius, ptime(0.1), ptime(0.5)),
-     resize(angle, 0, -add_radius, ptime(0.5), ptime(0.9)),
+     resize(angle, 0f0, add_radius, ptime(0.1), ptime(0.5)),
+     resize(angle, 0f0, -add_radius, ptime(0.5), ptime(0.9)),
      shift_color(angle, Point3f(-1 * color_shift), ptime(0.9), end_time)]
 end
 function highlight(angle::EuclidAngle3f, color_shift::Point3f,
