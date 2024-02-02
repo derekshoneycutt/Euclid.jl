@@ -113,7 +113,7 @@ function draw(angle::EuclidAngle2f)
         dp = dot(A, B)
         normprod = norm(A)*norm(B)
         θ = acos(dp/normprod)
-        (A[2] >= 0 ? 1 : -1) * (θ == 0f0 && A[1] < 0 ? π : θ)
+        return θ
     end
 
     function get_vecθs(center::Point, pointA::Point, pointB::Point)
