@@ -315,9 +315,11 @@ function draw(circle::EuclidCircle3f)
         (θ, ϕ)
     end
 
-    function get_circ_points(center::Point3f, T::Matrix{Float32}; sects::Int=60, width::Float32=0.02f0)
+    function get_circ_points(center::Point3f, T::Matrix{Float32};
+            sects::Int=60, width::Float32=0.02f0)
         [
-            Point3f(center + (T * [width * cos(2π*i / Float32(sects)), width * sin(2π*i / Float32(sects)), 0f0]))
+            Point3f(center + (T * [width * cos(2π*i / Float32(sects)),
+                width * sin(2π*i / Float32(sects)), 0f0]))
             for i in 1:sects
         ]
     end
@@ -325,7 +327,8 @@ function draw(circle::EuclidCircle3f)
     function pipetris_from_circs(offset::Int; sects::Int=60, )
         vcat([
             [TriangleFace{Int}(offset + i, offset + sects + i, offset + (i == sects ? 1 : i + 1)),
-             TriangleFace{Int}(offset + (i == sects ? 1 : i + 1), offset + sects + i, offset + (i == sects ? sects + 1 : sects + i + 1))]
+             TriangleFace{Int}(offset + (i == sects ? 1 : i + 1), offset + sects + i,
+                offset + (i == sects ? sects + 1 : sects + i + 1))]
             for i in 1:sects
         ]...)
     end
@@ -404,7 +407,8 @@ function draw(circle::EuclidCircle3f)
         *[cos($ϕ) 0 sin($ϕ); 0 1 0; -sin($ϕ) 0 cos($ϕ)]
     )
     draw_points = @lift([
-        Point3f0($T * [cos(a) * $radius, sin(a) * $radius, 0] + $center) for a in $startθ:π/circ_sects:$endθ
+        Point3f0($T * [cos(a) * $radius, sin(a) * $radius, 0] + $center)
+        for a in $startθ:π/circ_sects:$endθ
     ])
 
     mesh_data = @lift(get_pipe_mesh($draw_points, $width, circ_sects))

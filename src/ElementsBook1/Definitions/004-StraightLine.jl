@@ -27,12 +27,12 @@ Set up highlighting a single straight line in a Euclid diagram
 """
 function straight_line(line::EuclidLine2f, markers::Integer; color=:red)
 
-    start_base = @lift($(line.data).extremityA.definition)
-    end_base = @lift($(line.data).extremityB.definition)
-    n_vec = @lift(($end_base - $start_base) / Float32(markers))
+    start_base = Observables.@map(&(line.data).extremityA.definition)
+    end_base = Observables.@map(&(line.data).extremityB.definition)
+    n_vec = Observables.@map((&end_base - &start_base) / Float32(markers))
     marker_points = [
         point(line.label * string(i),
-            @lift(euclidean_point($n_vec * (i - 1) + $start_base,
+        Observables.@map(euclidean_point(&n_vec * (i - 1) + &start_base,
                 size=0f0, color=color, opacity=1f0)), showtext=false)
         for i in 1:markers]
 
@@ -40,12 +40,12 @@ function straight_line(line::EuclidLine2f, markers::Integer; color=:red)
 end
 function straight_line(line::EuclidLine3f, markers::Integer; color=:red)
 
-    start_base = @lift($(line.data).extremityA.definition)
-    end_base = @lift($(line.data).extremityB.definition)
-    n_vec = @lift(($end_base - $start_base) / Float32(markers))
+    start_base = Observables.@map(&(line.data).extremityA.definition)
+    end_base = Observables.@map(&(line.data).extremityB.definition)
+    n_vec = Observables.@map((&end_base - &start_base) / Float32(markers))
     marker_points = [
         point(line.label * string(i),
-            @lift(euclidean_point($n_vec * (i - 1) + $start_base,
+        Observables.@map(euclidean_point(&n_vec * (i - 1) + &start_base,
                 size=0f0, color=color, opacity=1f0)), showtext=false)
         for i in 1:markers]
 
@@ -72,7 +72,7 @@ function highlight(straight::EuclidStraightLine2f, add_size::Float32,
         [
             resize(p, add_size, start_time, ptime(0.1)),
             move(p, straight.vector, ptime(0.1), ptime(0.5)),
-            move(p, @lift(Point2f(-1 * $(straight.vector))), ptime(0.5), ptime(0.9)),
+            move(p, Observables.@map(Point2f(-1 * &(straight.vector))), ptime(0.5), ptime(0.9)),
             resize(p, -add_size, ptime(0.9), end_time)
         ]
         for (i, p) in enumerate(straight.markers)
@@ -89,7 +89,7 @@ function highlight(straight::EuclidStraightLine3f, add_size::Float32,
         [
             resize(p, add_size, start_time, ptime(0.1)),
             move(p, straight.vector, ptime(0.1), ptime(0.5)),
-            move(p, @lift(Point3f(-1 * $(straight.vector))), ptime(0.5), ptime(0.9)),
+            move(p, Observables.@map(Point3f(-1 * &(straight.vector))), ptime(0.5), ptime(0.9)),
             resize(p, -add_size, ptime(0.9), end_time)
         ]
         for p in straight.markers

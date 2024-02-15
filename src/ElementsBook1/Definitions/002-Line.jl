@@ -369,7 +369,8 @@ end
 function rotate(line::EuclidLine2f, center::Observable{EuclidSpacePoint2f}, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
     EuclidLineRotateTransform{2}(EuclidTransformBase(line.label, start_time, end_time),
-        line.data, @lift(($center).definition), radians, clockwise, :twod, Observable(0f0))
+        line.data, Observables.@map((&center).definition),
+        radians, clockwise, :twod, Observable(0f0))
 end
 function rotate(line::EuclidLine2f, center::EuclidSpacePoint2f, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
@@ -379,7 +380,8 @@ end
 function rotate(line::EuclidLine2f, center::EuclidPoint2f, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
     EuclidLineRotateTransform{2}(EuclidTransformBase(line.label, start_time, end_time),
-        line.data, @lift($(center.data).definition), radians, clockwise, :twod, Observable(0f0))
+        line.data, Observables.@map(&(center.data).definition),
+        radians, clockwise, :twod, Observable(0f0))
 end
 function rotate(line::EuclidLine3f, center::Observable{Point3f}, radians::Float32,
         start_time::Float32, end_time::Float32; axis::Symbol=:x, clockwise::Bool=false)
@@ -403,7 +405,8 @@ function rotate(line::EuclidLine3f, center::Observable{EuclidSpacePoint3f}, radi
         throw("Axis of rotation for 3D lines must be specified as :x, :y, or :z")
     end
     EuclidLineRotateTransform{3}(EuclidTransformBase(line.label, start_time, end_time),
-        line.data, @lift(($center).definition), radians, clockwise, axis, Observable(0f0))
+        line.data, Observables.@map((&center).definition),
+        radians, clockwise, axis, Observable(0f0))
 end
 function rotate(line::EuclidLine3f, center::EuclidSpacePoint3f, radians::Float32,
         start_time::Float32, end_time::Float32; axis::Symbol=:x, clockwise::Bool=false)
@@ -419,7 +422,8 @@ function rotate(line::EuclidLine3f, center::EuclidPoint3f, radians::Float32,
         throw("Axis of rotation for 3D lines must be specified as :x, :y, or :z")
     end
     EuclidLineRotateTransform{3}(EuclidTransformBase(line.label, start_time, end_time),
-        line.data, @lift($(center.data).definition), radians, clockwise, axis, Observable(0f0))
+        line.data, Observables.@map(&(center.data).definition),
+        radians, clockwise, axis, Observable(0f0))
 end
 
 
@@ -724,14 +728,14 @@ Get the point of intersection of 2 lines, if present
 function intersection(line1::EuclidLine2f, line2::EuclidLine2f, label::String;
         showtext::Bool=false,
         size::Float32=0f0, opacity::Float32=0f0, color=line1.data[].color)
-    A = point(label, @lift(intersection($(line1.data), $(line2.data),
+    A = point(label, Observables.@map(intersection(&(line1.data), &(line2.data),
         size=size, opacity=opacity, color=color)), showtext=showtext)
     return A
 end
 function intersection(line1::EuclidLine3f, line2::EuclidLine3f, label::String;
         showtext::Bool=false,
         size::Float32=0f0, opacity::Float32=0f0, color=line1.data[].color)
-    A = point(label, @lift(intersection($(line1.data), $(line2.data),
+    A = point(label, Observables.@map(intersection(&(line1.data), &(line2.data),
         size=size, opacity=opacity, color=color)), showtext=showtext)
     return A
 end

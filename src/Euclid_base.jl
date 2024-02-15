@@ -11,12 +11,9 @@ using Observables;
 using Distributions;
 using ReusePatterns;
 
-using GLMakie;
-using LaTeXStrings;
-using Latexify;
 using Base64;
 
-export Observable, @L_str, Point2f, Point2f0, Point3f, Point3f0
+export Observable, Point2f, Point2f0, Point3f, Point3f0
 
 # Load the core library features
 include("Core/Colors.jl");
@@ -36,10 +33,3 @@ include("Base/Text.jl");
 # Load Euclid Elements books
 include("ElementsBook1/EuclidElementsBook1.jl");
 
-
-# Load the Makie code
-include("Makie/ChartSpace.jl");
-include("Makie/AxisElements.jl");
-include("Makie/Animations.jl");
-include("Makie/Base.jl");
-include("Makie/EuclidElementsBook1.jl");

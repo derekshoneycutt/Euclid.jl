@@ -363,7 +363,8 @@ end
 function rotate(angle::EuclidAngle2f, center::Observable{EuclidSpacePoint2f}, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
     EuclidAngleRotateTransform{2}(EuclidTransformBase(angle.label, start_time, end_time),
-        angle.data, @lift(($center).definition), radians, clockwise, :twod, Observable(0f0))
+        angle.data, Observables.@map((&center).definition),
+        radians, clockwise, :twod, Observable(0f0))
 end
 function rotate(angle::EuclidAngle2f, center::EuclidSpacePoint2f, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
@@ -373,7 +374,8 @@ end
 function rotate(angle::EuclidAngle2f, center::EuclidPoint2f, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
     EuclidAngleRotateTransform{2}(EuclidTransformBase(angle.label, start_time, end_time),
-        angle.data, @lift($(center.data).definition), radians, clockwise, :twod, Observable(0f0))
+        angle.data, Observables.@map(&(center.data).definition),
+        radians, clockwise, :twod, Observable(0f0))
 end
 function rotate(angle::EuclidAngle3f, center::Observable{Point3f}, radians::Float32,
         start_time::Float32, end_time::Float32; axis::Symbol=:x, clockwise::Bool=false)
@@ -397,7 +399,8 @@ function rotate(angle::EuclidAngle3f, center::Observable{EuclidSpacePoint3f}, ra
         throw("Axis of rotation for 3D angles must be specified as :x, :y, or :z")
     end
     EuclidAngleRotateTransform{3}(EuclidTransformBase(angle.label, start_time, end_time),
-        angle.data, @lift(($center).definition), radians, clockwise, axis, Observable(0f0))
+        angle.data, Observables.@map((&center).definition),
+        radians, clockwise, axis, Observable(0f0))
 end
 function rotate(angle::EuclidAngle3f, center::EuclidSpacePoint3f, radians::Float32,
         start_time::Float32, end_time::Float32; axis::Symbol=:x, clockwise::Bool=false)
@@ -413,7 +416,8 @@ function rotate(angle::EuclidAngle3f, center::EuclidPoint3f, radians::Float32,
         throw("Axis of rotation for 3D angles must be specified as :x, :y, or :z")
     end
     EuclidAngleRotateTransform{3}(EuclidTransformBase(angle.label, start_time, end_time),
-        angle.data, @lift($(center.data).definition), radians, clockwise, axis, Observable(0f0))
+        angle.data, Observables.@map(&(center.data).definition),
+        radians, clockwise, axis, Observable(0f0))
 end
 
 

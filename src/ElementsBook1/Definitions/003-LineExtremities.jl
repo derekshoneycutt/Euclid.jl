@@ -14,15 +14,15 @@ Get points representing the extremities of a given line
 """
 function extremities(line::EuclidLine2f, labelA::String, labelB::String;
         showtextA::Bool=false, showtextB::Bool=false)
-    extrems = @lift(extremities($(line.data)))
-    A = point(labelA, @lift(($extrems)[1]), showtext=showtextA)
-    B = point(labelB, @lift(($extrems)[2]), showtext=showtextB)
+    extrems = Observables.@map(extremities(&(line.data)))
+    A = point(labelA, Observables.@map((&extrems)[1]), showtext=showtextA)
+    B = point(labelB, Observables.@map((&extrems)[2]), showtext=showtextB)
     return (A, B)
 end
 function extremities(line::EuclidLine3f, labelA::String, labelB::String;
         showtextA::Bool=false, showtextB::Bool=false)
-    extrems = @lift(extremities($(line.data)))
-    A = point(labelA, @lift(($extrems)[1]), showtext=showtextA)
-    B = point(labelB, @lift(($extrems)[2]), showtext=showtextB)
+    extrems = Observables.@map(extremities(&(line.data)))
+    A = point(labelA, Observables.@map((&extrems)[1]), showtext=showtextA)
+    B = point(labelB, Observables.@map((&extrems)[2]), showtext=showtextB)
     return (A, B)
 end

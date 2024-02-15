@@ -26,38 +26,48 @@ Set up highlighting a single plane surface in a Euclid diagram
 - `color`: The color to use in highlighting the surface
 """
 function plane_surface(surface::EuclidSurface2f, markers::Integer; color=:palevioletred1)
-    ngon = @lift(length(($(surface.data)).points))
-    topoint1 = @lift(Int(floor($ngon / 2)))
-    topoint2 = @lift(Int(ceil($ngon / 2)) + 1)
-    fromline = @lift(euclidean_line(($(surface.data)).points[1], ($(surface.data)).points[$ngon]))
-    toline = @lift(euclidean_line(($(surface.data)).points[$topoint1], ($(surface.data)).points[$topoint2]))
-    linevec = @lift(vector($fromline, $toline))
-    n_vec = @lift(EuclidLineVector(($linevec).vectorA / Float32(markers), ($linevec).vectorB / Float32(markers)))
+    ngon = Observables.@map(length((&(surface.data)).points))
+    topoint1 = Observables.@map(Int(floor(&ngon / 2)))
+    topoint2 = Observables.@map(Int(ceil(&ngon / 2)) + 1)
+    fromline = Observables.@map(
+        euclidean_line((&(surface.data)).points[1], (&(surface.data)).points[&ngon]))
+    toline = Observables.@map(
+        euclidean_line((&(surface.data)).points[&topoint1], (&(surface.data)).points[&topoint2]))
+    linevec = Observables.@map(vector(&fromline, &toline))
+    n_vec = Observables.@map(
+        EuclidLineVector((&linevec).vectorA / Float32(markers),
+            (&linevec).vectorB / Float32(markers)))
 
     marker_lines = [
         line(surface.label * "_Plane" * string(i) * "_",
-            @lift(euclidean_line(($n_vec).vectorA * (i - 1) + ($(surface.data)).points[1].definition,
-                ($n_vec).vectorB * (i - 1) + ($(surface.data)).points[$ngon].definition,
-                width=0f0, color=color, opacity=1f0)))
+            Observables.@map(
+                euclidean_line((&n_vec).vectorA * (i - 1) + (&(surface.data)).points[1].definition,
+                    (&n_vec).vectorB * (i - 1) + (&(surface.data)).points[&ngon].definition,
+                    width=0f0, color=color, opacity=1f0)))
         for i in 1:markers
     ]
 
     EuclidPlaneSurface2f(surface, n_vec, marker_lines)
 end
 function plane_surface(surface::EuclidSurface3f, markers::Integer; color=:palevioletred1)
-    ngon = @lift(length(($(surface.data)).points))
-    topoint1 = @lift(Int(floor($ngon / 2)))
-    topoint2 = @lift(Int(ceil($ngon / 2)) + 1)
-    fromline = @lift(euclidean_line(($(surface.data)).points[1], ($(surface.data)).points[$ngon]))
-    toline = @lift(euclidean_line(($(surface.data)).points[$topoint1], ($(surface.data)).points[$topoint2]))
-    linevec = @lift(vector($fromline, $toline))
-    n_vec = @lift(EuclidLineVector(($linevec).vectorA / Float32(markers), ($linevec).vectorB / Float32(markers)))
+    ngon = Observables.@map(length((&(surface.data)).points))
+    topoint1 = Observables.@map(Int(floor(&ngon / 2)))
+    topoint2 = Observables.@map(Int(ceil(&ngon / 2)) + 1)
+    fromline = Observables.@map(
+        euclidean_line((&(surface.data)).points[1], (&(surface.data)).points[&ngon]))
+    toline = Observables.@map(
+        euclidean_line((&(surface.data)).points[&topoint1], (&(surface.data)).points[&topoint2]))
+    linevec = Observables.@map(vector(&fromline, &toline))
+    n_vec = Observables.@map(
+        EuclidLineVector((&linevec).vectorA / Float32(markers),
+            (&linevec).vectorB / Float32(markers)))
 
     marker_lines = [
         line(surface.label * "_Plane" * string(i) * "_",
-            @lift(euclidean_line(($n_vec).vectorA * (i - 1) + ($(surface.data)).points[1].definition,
-                ($n_vec).vectorB * (i - 1) + ($(surface.data)).points[$ngon].definition,
-                width=0f0, color=color, opacity=1f0)))
+            Observables.@map(
+                euclidean_line((&n_vec).vectorA * (i - 1) + (&(surface.data)).points[1].definition,
+                    (&n_vec).vectorB * (i - 1) + (&(surface.data)).points[&ngon].definition,
+                    width=0f0, color=color, opacity=1f0)))
         for i in 1:markers
     ]
 
@@ -80,7 +90,8 @@ function highlight(plane::EuclidPlaneSurface2f, add_size::Float32,
     duration = end_time - start_time
     ptime(p) = Float32(start_time + (duration * p))
 
-    rev_vector = @lift(EuclidLineVector(-1 * ($(plane.vector)).vectorA, -1 * ($(plane.vector)).vectorB))
+    rev_vector = Observables.@map(
+        EuclidLineVector(-1 * (&(plane.vector)).vectorA, -1 * (&(plane.vector)).vectorB))
     transformations = [
         [
             resize(p, add_size, start_time, ptime(0.1)),
@@ -98,7 +109,8 @@ function highlight(plane::EuclidPlaneSurface3f, add_size::Float32,
     duration = end_time - start_time
     ptime(p) = Float32(start_time + (duration * p))
 
-    rev_vector = @lift(EuclidLineVector(-1 * ($(plane.vector)).vectorA, -1 * ($(plane.vector)).vectorB))
+    rev_vector = Observables.@map(
+        EuclidLineVector(-1 * (&(plane.vector)).vectorA, -1 * (&(plane.vector)).vectorB))
     transformations = [
         [
             resize(p, add_size, start_time, ptime(0.1)),

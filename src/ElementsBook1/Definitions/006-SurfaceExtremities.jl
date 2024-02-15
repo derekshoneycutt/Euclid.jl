@@ -11,16 +11,16 @@ Get points representing the extremities of a given surface
 """
 function extremities(surface::EuclidSurface2f, labels::Vector{String};
         width::Float32=0f0, opacity::Float32=0f0, color=:blue)
-    extrems = @lift(extremities($(surface.data), width=width, opacity=opacity, color=color))
+    extrems = Observables.@map(extremities(&(surface.data), width=width, opacity=opacity, color=color))
     sides = length(extrems[])
-    lines = [line(labels[i], @lift(($extrems)[i])) for i in 1:sides]
+    lines = [line(labels[i], Observables.@map((&extrems)[i])) for i in 1:sides]
     return lines
 end
 function extremities(surface::EuclidSurface3f, labels::Vector{String};
         width::Float32=0f0, opacity::Float32=0f0, color=:blue)
-    extrems = @lift(extremities($(surface.data), width=width, opacity=opacity, color=color))
+    extrems = Observables.@map(extremities(&(surface.data), width=width, opacity=opacity, color=color))
     sides = length(extrems[])
-    lines = [line(labels[i], @lift(($extrems)[i])) for i in 1:sides]
+    lines = [line(labels[i], Observables.@map((&extrems)[i])) for i in 1:sides]
     return lines
 end
 
