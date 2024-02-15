@@ -1,4 +1,4 @@
-export EuclidTransformBase,
+export EuclidTransformBase, perform_transforms,
     get_transformation_label, get_transformation_starttime, get_transformation_endtime,
     show_complete
 
