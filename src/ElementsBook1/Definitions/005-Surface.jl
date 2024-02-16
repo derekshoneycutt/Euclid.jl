@@ -283,7 +283,7 @@ end
 function rotate(surface::EuclidSurface2f, center::EuclidPoint2f, radians::Float32,
         start_time::Float32, end_time::Float32; clockwise::Bool=false)
     EuclidSurfaceRotateTransform{2}(EuclidTransformBase(surface.label, start_time, end_time),
-        surface.data, Observables.@map(&(center.data).definition), radians, clockwise, :twod, Observable(0f0))
+        surface.data, Observables.@map((&(center.data)).definition), radians, clockwise, :twod, Observable(0f0))
 end
 function rotate(surface::EuclidSurface3f, center::Observable{Point3f}, radians::Float32,
         start_time::Float32, end_time::Float32; axis::Symbol=:x, clockwise::Bool=false)
@@ -323,7 +323,7 @@ function rotate(surface::EuclidSurface3f, center::EuclidPoint3f, radians::Float3
         throw("Axis of rotation for 3D surfaces must be specified as :x, :y, or :z")
     end
     EuclidSurfaceRotateTransform{3}(EuclidTransformBase(surface.label, start_time, end_time),
-        surface.data, Observables.@map(&(center.data).definition), radians, clockwise, axis, Observable(0f0))
+        surface.data, Observables.@map((&(center.data)).definition), radians, clockwise, axis, Observable(0f0))
 end
 
 

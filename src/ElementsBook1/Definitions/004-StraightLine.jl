@@ -27,8 +27,8 @@ Set up highlighting a single straight line in a Euclid diagram
 """
 function straight_line(line::EuclidLine2f, markers::Integer; color=:red)
 
-    start_base = Observables.@map(&(line.data).extremityA.definition)
-    end_base = Observables.@map(&(line.data).extremityB.definition)
+    start_base = Observables.@map((&(line.data)).extremityA.definition)
+    end_base = Observables.@map((&(line.data)).extremityB.definition)
     n_vec = Observables.@map((&end_base - &start_base) / Float32(markers))
     marker_points = [
         point(line.label * string(i),
@@ -40,8 +40,8 @@ function straight_line(line::EuclidLine2f, markers::Integer; color=:red)
 end
 function straight_line(line::EuclidLine3f, markers::Integer; color=:red)
 
-    start_base = Observables.@map(&(line.data).extremityA.definition)
-    end_base = Observables.@map(&(line.data).extremityB.definition)
+    start_base = Observables.@map((&(line.data)).extremityA.definition)
+    end_base = Observables.@map((&(line.data)).extremityB.definition)
     n_vec = Observables.@map((&end_base - &start_base) / Float32(markers))
     marker_points = [
         point(line.label * string(i),
