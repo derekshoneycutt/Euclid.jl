@@ -58,4 +58,4 @@ The current architectural layers of the project:
 
 ## Drawings
 
-The above code sample, as well as the EUclid project this was developed for also utilize a specific drawing library located at [https://derekshoneycutt.github.io/EuclidGLMakie.jl/index.html](https://derekshoneycutt.github.io/EuclidGLMakie.jl/index.html). This was decoupled from this project to keep this one cleaner and more versatile.
+The above code sample, as well as the Euclid project this was developed for also utilize a specific drawing library located at [https://github.com/derekshoneycutt/EuclidGLMakie.jl](https://github.com/derekshoneycutt/EuclidGLMakie.jl). This was decoupled from this project to keep this one cleaner and more versatile.
