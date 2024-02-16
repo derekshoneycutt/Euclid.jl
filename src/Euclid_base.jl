@@ -11,8 +11,6 @@ using Observables;
 using Distributions;
 using ReusePatterns;
 
-using Base64;
-
 export Observable, Point2f, Point2f0, Point3f, Point3f0
 
 # Load the core library features
