@@ -76,7 +76,7 @@ function euclidean_circle(
 end
 function euclidean_circle(
         center::EuclidSpacePoint3f, radius::Float32;
-        normal::Point3f=Point3f0(0,0,1),
+        normal::Point3f=Point3f(0,0,1),
         startθ::Float32=0f0, endθ::Float32=startθ,
         width::Float32=0f0, opacity::Float32=0f0, color=:blue)
     EuclidSpaceCircle3f(center, radius, normal,
@@ -92,7 +92,7 @@ function euclidean_circle(
 end
 function euclidean_circle(
         center::Point3f, radius::Float32;
-        normal::Point3f=Point3f0(0,0,1),
+        normal::Point3f=Point3f(0,0,1),
         startθ::Float32=0f0, endθ::Float32=startθ,
         width::Float32=0f0, opacity::Float32=0f0, color=:blue)
     use_center = euclidean_point(center)
@@ -335,7 +335,7 @@ function euclidean_surface(circle::EuclidSpaceCircle2f;
     startθ = circle.startθ
     endθ = circle.endθ
     use_points = [
-        Point2f0(r * cos(θ) + center[1], r * sin(θ) + center[2])
+        Point2f(r * cos(θ) + center[1], r * sin(θ) + center[2])
         for θ in startθ:(2π/points):endθ
     ]
 
@@ -350,7 +350,7 @@ function euclidean_surface(circle::EuclidSpaceCircle3f;
     startθ = circle.startθ
     endθ = circle.endθ
     use_points = [
-        Point3f0(([r * cos(θ), r * sin(θ), 0]
+        Point3f(([r * cos(θ), r * sin(θ), 0]
             * (rotation_matrix(nθ, axis=:x) * rotation_matrix(nϕ, axis=:z)))
             + center)
         for θ in startθ:(2π/points):endθ
@@ -376,8 +376,8 @@ function diameter(circle::EuclidSpaceCircle2f, θ::Float32;
         width::Float32=1f0, opacity::Float32=0f0, color=:blue)
     c = circle.center.definition
     r = circle.radius
-    point1 = Point2f0(cos(θ), sin(θ)) * r + c
-    point2 = Point2f0(cos(θ + π), sin(θ + π)) * r + c
+    point1 = Point2f(cos(θ), sin(θ)) * r + c
+    point2 = Point2f(cos(θ + π), sin(θ + π)) * r + c
 
     def = euclidean_line(point1, point2, width=width, color=color, opacity=opacity)
 
@@ -393,8 +393,8 @@ function diameter(circle::EuclidSpaceCircle3f, θ::Float32;
     T = [cos(nθ) -sin(nθ) 0; sin(nθ) cos(nθ) 0; 0 0 1] *
         [cos(nϕ) 0 sin(nϕ); 0 1 0; -sin(nϕ) 0 cos(nϕ)]
 
-    point1 = Point3f0(T * [cos(θ), sin(θ), 0] * r + c)
-    point2 = Point3f0(T * [cos(θ + π), sin(θ + π), 0] * r + c)
+    point1 = Point3f(T * [cos(θ), sin(θ), 0] * r + c)
+    point2 = Point3f(T * [cos(θ + π), sin(θ + π), 0] * r + c)
 
     def = euclidean_line(point1, point2, width=width, color=color, opacity=opacity)
 
@@ -442,11 +442,11 @@ end
 Get transformation for a Euclidean Space Line to change the normal vector to some degree
 
 # Arguments
-- `normal::Point3f0`: The vector to add to the normal
+- `normal::Point3f`: The vector to add to the normal
 - `percent_from::Float32`: The percent of the transformation already applied (0f0 = 0%, 1f0 = 100%)
 - `percent_to::Float32`: The percent of the transformation to apply up to (0f0 = 0%, 1f0 = 100%)
 """
-function changenormal_circle(normal::Point3f0;
+function changenormal_circle(normal::Point3f;
         percent_from::Float32=0f0, percent_to::Float32=1f0)
     move = normal .*  (percent_to - percent_from)
     euclidean_circle_transform(normal=move)
@@ -708,10 +708,10 @@ function intersection(circle::EuclidSpaceCircle2f, line::EuclidSpaceLine2f;
         x_2 = (-quadb - √sqrtprt) / denomprt
         y_1 = m * x_1 + b
         if x_1 ≈ x_2
-            intersects = [Point2f0(x_1, y_1)]
+            intersects = [Point2f(x_1, y_1)]
         else
             y_2 = m * x_2 + b
-            intersects = [Point2f0(x_1, y_1), Point2f0(x_2, y_2)]
+            intersects = [Point2f(x_1, y_1), Point2f(x_2, y_2)]
         end
     end
 
@@ -741,10 +741,10 @@ function intersection(c1::EuclidSpaceCircle2f, c2::EuclidSpaceCircle2f;
 
     intersects = []
     if d ≈ r1 + r2
-        intersects = [Point2f0((c1 * r2  + c2 * r1) / (r1 + r2))]
+        intersects = [Point2f((c1 * r2  + c2 * r1) / (r1 + r2))]
     elseif d < r1 + r2
         if d ≈ r1 - r2
-            intersects = [Point2f0((c1 - c2) * r2 / (r2 - r1))]
+            intersects = [Point2f((c1 - c2) * r2 / (r2 - r1))]
         elseif d > r1 - r2
             a = (r1^2 - r2^2 + d^2) / 2*d
             h = √(r1^2 - a^2)
@@ -752,8 +752,8 @@ function intersection(c1::EuclidSpaceCircle2f, c2::EuclidSpaceCircle2f;
             clockwise = [0 1; -1 0] * cv
             counterclockwise = [0 -1; 1 0] * cv
             intersects = [
-                Point2f0(c - (h/d) * clockwise),
-                Point2f0(c - (h/d) * counterclockwise)
+                Point2f(c - (h/d) * clockwise),
+                Point2f(c - (h/d) * counterclockwise)
             ]
         end
     end
@@ -781,10 +781,10 @@ function intersection(c1::EuclidSpaceCircle3f, c2::EuclidSpaceCircle3f;
         # TODO  : Intersections not on same plane?!
     elseif cv ⋅ n1 ≈ 0
         if d ≈ r1 + r2
-            intersects = [Point3f0((c1 * r2  + c2 * r1) / (r1 + r2))]
+            intersects = [Point3f((c1 * r2  + c2 * r1) / (r1 + r2))]
         elseif d < r1 + r2
             if d ≈ r1 - r2
-                intersects = [Point3f0((c1 - c2) * r2 / (r2 - r1))]
+                intersects = [Point3f((c1 - c2) * r2 / (r2 - r1))]
             elseif d > r1 - r2
                 cv_norm = normalize(cv)
                 cv_mod = cv_norm × normalize(n1)
@@ -792,8 +792,8 @@ function intersection(c1::EuclidSpaceCircle3f, c2::EuclidSpaceCircle3f;
                 dx = 0.5 * q / d
                 dy = 0.5 * √(4 * d^2 * r2^2 - q^2) / d
                 intersects = [
-                    Point3f0(c1 - (cv_norm * dx + cv_mod * dy)),
-                    Point3f0(c1 - (cv_norm * dx - cv_mod * dy))
+                    Point3f(c1 - (cv_norm * dx + cv_mod * dy)),
+                    Point3f(c1 - (cv_norm * dx - cv_mod * dy))
                 ]
             end
         end

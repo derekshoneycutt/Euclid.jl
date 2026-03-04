@@ -482,13 +482,13 @@ function reflect(line::EuclidLine2f, start_time::Float32, end_time::Float32;
         axis::Symbol=:x, x_offset::Float32=0f0, y_offset::Float32=0f0)
     EuclidLineReflectTransform{2}(EuclidTransformBase(line.label, start_time, end_time),
         line.data, Observable(nothing),
-        Point2f0(x_offset, y_offset), axis, Observable(0f0))
+        Point2f(x_offset, y_offset), axis, Observable(0f0))
 end
 function reflect(line::EuclidLine3f, start_time::Float32, end_time::Float32;
         axis::Symbol=:xy, x_offset::Float32=0f0, y_offset::Float32=0f0, z_offset::Float32=0f0)
     EuclidLineReflectTransform{3}(EuclidTransformBase(line.label, start_time, end_time),
         line.data, Observable(nothing),
-        Point3f0(x_offset, y_offset, z_offset), axis, Observable(0f0))
+        Point3f(x_offset, y_offset, z_offset), axis, Observable(0f0))
 end
 
 
@@ -570,13 +570,13 @@ function scale(line::EuclidLine2f, factor::Float32, start_time::Float32, end_tim
         factory::Float32=factor)
     EuclidLineScaleTransform{2}(EuclidTransformBase(line.label, start_time, end_time),
         line.data, Observable(nothing),
-        Point2f0(factor, factory), Observable(0f0))
+        Point2f(factor, factory), Observable(0f0))
 end
 function scale(line::EuclidLine3f, factor::Float32, start_time::Float32, end_time::Float32;
         factory::Float32=factor, factorz::Float32=factor)
     EuclidLineScaleTransform{3}(EuclidTransformBase(line.label, start_time, end_time),
         line.data, Observable(nothing),
-        Point3f0(factor, factory, factorz), Observable(0f0))
+        Point3f(factor, factory, factorz), Observable(0f0))
 end
 
 

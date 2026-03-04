@@ -52,11 +52,11 @@ Shorthand for defining a euclidean point in space
 """
 function euclidean_point(x::Float32, y::Float32;
         size::Float32=0f0, opacity::Float32=0f0, color=:blue)
-    EuclidSpacePoint2f(Point2f0(x, y), size, opacity, get_color(color))
+    EuclidSpacePoint2f(Point2f(x, y), size, opacity, get_color(color))
 end
 function euclidean_point(x::Float32, y::Float32, z::Float32;
         size::Float32=0f0, opacity::Float32=0f0, color=:blue)
-    EuclidSpacePoint3f(Point3f0(x, y, z), size, opacity, get_color(color))
+    EuclidSpacePoint3f(Point3f(x, y, z), size, opacity, get_color(color))
 end
 function euclidean_point(point::Point2f;
         size::Float32=0f0, opacity::Float32=0f0, color=:blue)

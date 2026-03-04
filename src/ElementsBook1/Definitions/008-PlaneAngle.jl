@@ -477,13 +477,13 @@ function reflect(angle::EuclidAngle2f, start_time::Float32, end_time::Float32;
         axis::Symbol=:x, x_offset::Float32=0f0, y_offset::Float32=0f0)
     EuclidAngleReflectTransform{2}(EuclidTransformBase(angle.label, start_time, end_time),
         angle.data, Observable(nothing),
-        Point2f0(x_offset, y_offset), axis, Observable(0f0))
+        Point2f(x_offset, y_offset), axis, Observable(0f0))
 end
 function reflect(angle::EuclidAngle3f, start_time::Float32, end_time::Float32;
         axis::Symbol=:xy, x_offset::Float32=0f0, y_offset::Float32=0f0, z_offset::Float32=0f0)
     EuclidAngleReflectTransform{3}(EuclidTransformBase(angle.label, start_time, end_time),
         angle.data, Observable(nothing),
-        Point3f0(x_offset, y_offset, z_offset), axis, Observable(0f0))
+        Point3f(x_offset, y_offset, z_offset), axis, Observable(0f0))
 end
 
 
@@ -565,13 +565,13 @@ function scale(angle::EuclidAngle2f, factor::Float32, start_time::Float32, end_t
         factory::Float32=factor)
     EuclidAngleScaleTransform{2}(EuclidTransformBase(angle.label, start_time, end_time),
         angle.data, Observable(nothing),
-        Point2f0(factor, factory), Observable(0f0))
+        Point2f(factor, factory), Observable(0f0))
 end
 function scale(angle::EuclidAngle3f, factor::Float32, start_time::Float32, end_time::Float32;
         factory::Float32=factor, factorz::Float32=factor)
     EuclidAngleScaleTransform{3}(EuclidTransformBase(angle.label, start_time, end_time),
         angle.data, Observable(nothing),
-        Point3f0(factor, factory, factorz), Observable(0f0))
+        Point3f(factor, factory, factorz), Observable(0f0))
 end
 
 

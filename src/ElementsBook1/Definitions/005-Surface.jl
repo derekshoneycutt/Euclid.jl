@@ -383,13 +383,13 @@ function reflect(surface::EuclidSurface2f, start_time::Float32, end_time::Float3
         axis::Symbol=:x, x_offset::Float32=0f0, y_offset::Float32=0f0)
     EuclidSurfaceReflectTransform{2}(EuclidTransformBase(surface.label, start_time, end_time),
         surface.data, Observable(nothing),
-        Point2f0(x_offset, y_offset), axis, Observable(0f0))
+        Point2f(x_offset, y_offset), axis, Observable(0f0))
 end
 function reflect(surface::EuclidSurface3f, start_time::Float32, end_time::Float32;
         axis::Symbol=:xy, x_offset::Float32=0f0, y_offset::Float32=0f0, z_offset::Float32=0f0)
     EuclidSurfaceReflectTransform{3}(EuclidTransformBase(surface.label, start_time, end_time),
         surface.data, Observable(nothing),
-        Point3f0(x_offset, y_offset, z_offset), axis, Observable(0f0))
+        Point3f(x_offset, y_offset, z_offset), axis, Observable(0f0))
 end
 
 
@@ -471,13 +471,13 @@ function scale(surface::EuclidSurface2f, factor::Float32, start_time::Float32, e
         factory::Float32=factor)
     EuclidSurfaceScaleTransform{2}(EuclidTransformBase(surface.label, start_time, end_time),
         surface.data, Observable(nothing),
-        Point2f0(factor, factory), Observable(0f0))
+        Point2f(factor, factory), Observable(0f0))
 end
 function scale(surface::EuclidSurface3f, factor::Float32, start_time::Float32, end_time::Float32;
         factory::Float32=factor, factorz::Float32=factor)
     EuclidSurfaceScaleTransform{3}(EuclidTransformBase(surface.label, start_time, end_time),
         surface.data, Observable(nothing),
-        Point3f0(factor, factory, factorz), Observable(0f0))
+        Point3f(factor, factory, factorz), Observable(0f0))
 end
 
 

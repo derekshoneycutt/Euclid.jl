@@ -11,7 +11,7 @@ using Observables;
 using Distributions;
 using ReusePatterns;
 
-export Observable, Point2f, Point2f0, Point3f, Point3f0
+export Observable, Point2f, Point3f
 
 # Load the core library features
 include("Core/Colors.jl");
