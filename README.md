@@ -1,5 +1,7 @@
 # Euclid.jl
 
+This project is effectively obsolete. It is not exactly dead. Just [over at another repo now](https://github.com/derekshoneycutt/EuclidApp).
+
 This first began as a project entirely about trying to code out the propositions in Euclid's Elements using the Julia language and GLMakie. That remains entirely true for what this is, but after some frustration with my initial round, I began to pull the code out into a new version. This project is to house a Julia module that is used to do all the drawing, etc. with cleaner git handlings.
 
 See [https://derekshoneycutt.github.io/Euclid/index.html](https://derekshoneycutt.github.io/Euclid/index.html) and [its GitHub source](https://github.com/derekshoneycutt/Euclid) for how this project is used.
